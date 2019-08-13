@@ -47,7 +47,35 @@ public class Caja {
 
     public void atender() {
         if (cliente_en_ventanilla != null) {
+            switch (cliente_en_ventanilla.getTransaccion()) {
+                case 0:
+                    if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
+                        distribuir_billetes(500);
+                        cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
+                    } else {
+                        distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
+                        cliente_en_ventanilla = null;
+                    }
+                    break;
+                case 1:
+                    if (fondos) {
+                        if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
+                            if (!entregar_billetes(500)) {
 
+                            } else {
+
+                            }
+                        } else if (entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion())) {
+
+                        }
+                    }
+
+                    break;
+            }
+            if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
+                cliente_en_ventanilla = null;
+
+            }
         } else if (!clientes_en_cola.VACIA()) {
             cliente_en_ventanilla = (Cliente) clientes_en_cola.FRENTE();
             clientes_en_cola.SACA_DE_COLA();
@@ -121,42 +149,42 @@ public class Caja {
     private boolean entregar_billetes(int i) {
         while (i != 0) {
             if ((!b500.VACIA()) && (i >= 500)) {
-                b500.METE(new Billete(500));
+                b500.SACA();
                 i -= 500;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
             }
             if ((!b100.VACIA()) && (i >= 100)) {
-                b100.METE(new Billete(100));
+                b100.SACA();
                 i -= 100;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 100);
             }
             if ((!b50.VACIA()) && (i >= 50)) {
-                b50.METE(new Billete(50));
+                b50.SACA();
                 i -= 50;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 50);
             }
             if ((!b20.VACIA()) && (i >= 20)) {
-                b20.METE(new Billete(20));
+                b20.SACA();
                 i -= 20;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 20);
             }
             if ((!b10.VACIA()) && (i >= 10)) {
-                b10.METE(new Billete(10));
+                b10.SACA();
                 i -= 10;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 10);
             }
             if ((!b5.VACIA()) && (i >= 5)) {
-                b5.METE(new Billete(5));
+                b5.SACA();
                 i -= 5;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 5);
             }
             if ((!b2.VACIA()) && (i >= 2)) {
-                b2.METE(new Billete(2));
+                b2.SACA();
                 i -= 2;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 2);
             }
             if ((!b1.VACIA()) && (i >= 1)) {
-                b1.METE(new Billete(1));
+                b1.SACA();
                 i -= 1;
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 1);
             }
