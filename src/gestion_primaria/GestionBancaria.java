@@ -73,8 +73,8 @@ public class GestionBancaria implements Runnable {
 
     private void estadisticas() {
         Caja caja_en_gestion = null;
+        System.out.println("Ciclos concluidos\n\n\n");
         for (int i = 0; i < 6; i++) {
-            System.out.println(i);
             caja_en_gestion = (Caja) cajas.RECUPERA(i + 1);
             cajas.SUPRIME(i + 1);
             caja_en_gestion.mostrarEstadistica();

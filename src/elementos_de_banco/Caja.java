@@ -242,7 +242,7 @@ public class Caja {
         System.out.println("Cantiad billetes 20:   "+detalle_20);
         System.out.println("Cantiad billetes 50:   "+detalle_50);
         System.out.println("Cantiad billetes 100:  "+detalle_100);
-        System.out.println("Cantiad billetes 500:  "+detalle_500);
+        System.out.println("Cantiad billetes 500:  "+detalle_500+"\n\n");
         
         
         
