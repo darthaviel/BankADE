@@ -37,7 +37,7 @@ public class Caja {
             detalle_2,
             detalle_1;
     private long monto_retiros,
-            monto_depositos,
+            monto_depositos = -100000,
             efectivo_en_caja;
 
     private Cliente cliente_en_ventanilla = null;

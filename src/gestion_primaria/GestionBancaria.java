@@ -73,13 +73,17 @@ public class GestionBancaria implements Runnable {
 
     private void estadisticas() {
         Caja caja_en_gestion = null;
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 6; i++) {
             System.out.println(i);
-            caja_en_gestion = (Caja) cajas.RECUPERA(i+1);
-            cajas.SUPRIME(i+1);
+            caja_en_gestion = (Caja) cajas.RECUPERA(i + 1);
+            cajas.SUPRIME(i + 1);
             caja_en_gestion.mostrarEstadistica();
-            cajas.INSERTA(caja_en_gestion, i+1);
-            
+            cajas.INSERTA(caja_en_gestion, i + 1);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
