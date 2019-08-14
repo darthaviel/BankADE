@@ -68,7 +68,7 @@ public class Caja {
             System.out.println("Atendiendo nuevo cliente.");
             atenderCaso();
         }else{
-            System.out.println("Sin clientes pra atender");
+            System.out.println("Sin clientes para atender\n");
         }
     }
 
@@ -243,7 +243,6 @@ public class Caja {
         System.out.println("Cantiad billetes 50:   "+detalle_50);
         System.out.println("Cantiad billetes 100:  "+detalle_100);
         System.out.println("Cantiad billetes 500:  "+detalle_500);
-        System.out.println("Efectivo en caja (ii): "+efectivo_en_caja);
         
         
         
