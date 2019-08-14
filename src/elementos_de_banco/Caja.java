@@ -47,64 +47,14 @@ public class Caja {
 
     public void atender() {
         if (cliente_en_ventanilla != null) {
-            switch (cliente_en_ventanilla.getTransaccion()) {
-                case 0:
-                    if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
-                        distribuir_billetes(500);
-                        cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
-                    } else {
-                        distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
-                        cliente_en_ventanilla = null;
-                    }
-                    break;
-                case 1:
-                    if (fondos) {
-                        if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
-                            if (!entregar_billetes(500)) {
+            System.out.println("Atendiendo cliente en ventanilla.");
+            atenderCaso();
 
-                            } else {
-
-                            }
-                        } else if (entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion())) {
-
-                        }
-                    }
-
-                    break;
-            }
-            if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
-                cliente_en_ventanilla = null;
-
-            }
         } else if (!clientes_en_cola.VACIA()) {
             cliente_en_ventanilla = (Cliente) clientes_en_cola.FRENTE();
             clientes_en_cola.SACA_DE_COLA();
-            switch (cliente_en_ventanilla.getTransaccion()) {
-                case 0:
-                    if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
-                        distribuir_billetes(500);
-                        cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
-                    } else {
-                        distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
-                        cliente_en_ventanilla = null;
-                    }
-                    break;
-                case 1:
-                    if (fondos) {
-                        if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
-                            if (!entregar_billetes(500)) {
-
-                            } else {
-
-                            }
-                        } else if (entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion())) {
-
-                        }
-                    }
-
-                    break;
-
-            }
+            System.out.println("Atendiendo nuevo cliente.");
+            atenderCaso();
         }
     }
 
@@ -189,12 +139,58 @@ public class Caja {
                 cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 1);
             }
 
-            if (b1.VACIA() && b2.VACIA() && b5.VACIA() && b10.VACIA() && b20.VACIA() && b50.VACIA() && b100.VACIA() && b500.VACIA() && (cliente_en_ventanilla.getMonto_de_transaccion() > 0)) {
+            if (b1.VACIA() && b2.VACIA() && b5.VACIA() && b10.VACIA() && b20.VACIA() && b50.VACIA() && b100.VACIA() && b500.VACIA() && (i > 0)) {
                 fondos = false;
                 return false;
             }
         }
         return true;
+    }
+
+    private void atenderCaso() {
+        switch (cliente_en_ventanilla.getTransaccion()) {
+            case 0:
+                System.out.println("Transacción: Depósito\n"
+                        + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
+                if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
+                    distribuir_billetes(500);
+                    cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
+                    System.out.println("Cliente en atención.\n"
+                            + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion() + "\n");
+
+                } else {
+                    distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
+                    cliente_en_ventanilla = null;
+                    System.out.println("Cliente atendido con éxito.");
+                }
+                break;
+            case 1:
+                System.out.println("Transacción: Retiro\n"
+                        + "Monto faltante:" + cliente_en_ventanilla.getMonto_de_transaccion());
+                if (fondos) {
+                    if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
+                        if (!entregar_billetes(500)) {
+                            System.out.println("Transacción incompleta. Caja sin fondos suficientes.");
+                        } else {
+                            System.out.println("Cliente en atención.\n"
+                                    + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion() + "\n");
+                        }
+                    } else {
+                        entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
+
+                        if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
+                            cliente_en_ventanilla = null;
+                            System.out.println("Cliente atendido con éxito.");
+                        } else {
+                            System.out.println("Sin moneda para completar la transacción.\n"
+                                    + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion() + "\n");
+                        }
+                    }
+                } else {
+                    System.out.println("Caja sin fondos.");
+                }
+                break;
+        }
     }
 
 }
