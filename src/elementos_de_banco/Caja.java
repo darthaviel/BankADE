@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package elementos_de_banco;
 
 import tda.cola.COLA;
 import tda.pila.PILA;
 
-/**
- *
- * @author l
- */
+
 public class Caja {
 
     private PILA b500 = new PILA();

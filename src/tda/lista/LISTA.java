@@ -1,14 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tda.lista;
 
-/**
- *
- * @author hguevara
- */
+
 public class LISTA{
 
     Cursor cursor_lista = new Cursor();

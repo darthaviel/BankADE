@@ -3,10 +3,7 @@ package tda.cola;
 import tda.lista.LISTA;
 
 
-/**
- *
- * @author l
- */
+
 public class COLA{
 
     LISTA lista_cola = new LISTA();

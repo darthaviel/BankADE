@@ -7,10 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import tda.lista.LISTA;
 
-/**
- *
- * @author l
- */
+
 public class GestionBancaria implements Runnable {
 
     private int numero_ciclos;

@@ -8,7 +8,6 @@ public class PILA {
 
     LISTA lista_pila = new LISTA();
 
-    // El tope de la pila se difine en FIN() de la lista lista_pila
     public boolean METE(Object dato) {
 
         if (lista_pila.INSERTA(dato, lista_pila.FIN()) == -1) {
