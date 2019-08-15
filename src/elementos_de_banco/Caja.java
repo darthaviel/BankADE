@@ -119,6 +119,7 @@ public class Caja {
     }
 
     private boolean entregar_billetes(int i) {
+        int ii = i;
         while (i != 0) {
             if ((!b500.VACIA()) && (i >= 500)) {
                 b500.SACA();
@@ -173,6 +174,12 @@ public class Caja {
                 fondos = false;
                 return false;
             }
+            
+            if(ii == i){
+                return false;
+            }else{
+                ii = i;
+            }
         }
         return true;
     }
@@ -219,7 +226,7 @@ public class Caja {
                         }
                     }
                 } else {
-                    System.out.println("Caja sin fondos.");
+                    System.out.println("Caja sin fondos.\n");
                 }
                 break;
         }
