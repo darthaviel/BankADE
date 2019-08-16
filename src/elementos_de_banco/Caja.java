@@ -108,7 +108,6 @@ public class Caja {
                 monto_depositos += 1;
             }
         }
-
     }
 
     private boolean entregar_billetes(int i) {
