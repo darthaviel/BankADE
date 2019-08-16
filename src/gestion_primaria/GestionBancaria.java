@@ -58,11 +58,11 @@ public class GestionBancaria implements Runnable {
                 cajas.SUPRIME(i + 1);
                 caja_en_gestion.atender();
                 cajas.INSERTA(caja_en_gestion, i + 1);
-                /*try {
+                try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
-                }*/
+                }
             }
         }
 

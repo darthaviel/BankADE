@@ -192,7 +192,7 @@ public class Caja {
                     distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
                     cliente_en_ventanilla = null;
                     clientes_atendidos++;
-                    System.out.println("Cliente atendido con éxito.");
+                    System.out.println("Cliente atendido con éxito.\n");
                 }
                 break;
             case 1:
