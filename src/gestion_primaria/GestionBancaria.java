@@ -2,6 +2,9 @@ package gestion_primaria;
 
 import elementos_de_banco.Caja;
 import elementos_de_banco.Cliente;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +15,9 @@ public class GestionBancaria implements Runnable {
 
     private int numero_ciclos;
     private LISTA cajas = new LISTA();
+    Socket socket;
+    ServerSocket server;
+    int PORT = 1025;
 
     @Override
     public void run() {
@@ -22,6 +28,13 @@ public class GestionBancaria implements Runnable {
     }
 
     private void init() {
+        try {
+            server = new ServerSocket(PORT);
+            socket = server.accept();
+            System.out.println("conectado con interfaz");
+        } catch (IOException ex) {
+            Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
+        }
         for (int i = 0; i < 6; i++) {
             cajas.INSERTA(new Caja(cajas.FIN()), cajas.FIN());
         }

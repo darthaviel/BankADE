@@ -1,10 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package gui;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -21,10 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-/**
- *
- * @author l
- */
+
 public class MainGUI extends Application implements Runnable {
 
     Label caja,
@@ -47,6 +46,9 @@ public class MainGUI extends Application implements Runnable {
             cliente,
             spacer0,
             spacer1;
+    Socket socket;
+    BufferedOutputStream out;
+    BufferedInputStream in;
 
     @Override
     public void run() {
@@ -59,7 +61,7 @@ public class MainGUI extends Application implements Runnable {
         startsim.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent t) {
-                stage.getScene().setRoot(root1);
+                
             }
         });
         exit.setOnAction(new EventHandler<ActionEvent>(){
@@ -78,6 +80,17 @@ public class MainGUI extends Application implements Runnable {
 
     @Override
     public void init() {
+        try {
+            Thread.sleep(1000);
+            socket = new Socket("localhost", 1025);
+            in = new BufferedInputStream(socket.getInputStream());
+            out = new BufferedOutputStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         exit = new Button("Exit");
         spacer0 = new Pane();
         spacer1 = new Pane();
