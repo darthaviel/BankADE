@@ -1,12 +1,8 @@
 package gui;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -21,7 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -50,8 +45,6 @@ public class MainGUI extends Application implements Runnable {
             spacer0,
             spacer1;
     Socket socket;
-    OutputStream out;
-    InputStream in;
     DataOutputStream dout;
     DataInputStream din;
 
@@ -68,15 +61,12 @@ public class MainGUI extends Application implements Runnable {
             public void handle(ActionEvent t) {
                 String intf;
                 intf = ciclos.getText();
-                System.out.println(ciclos.getText());
                 if (intf.trim().length() > 0) {
-                    ciclos.setText("1");
+                    ciclos.setText("0");
                     try {
-
                         dout.writeUTF(intf);
                         dout.flush();
                         dout.close();
-
                     } catch (Exception ex) {
 
                     }
@@ -103,8 +93,8 @@ public class MainGUI extends Application implements Runnable {
         try {
             Thread.sleep(1000);
             socket = new Socket("localhost", 1025);
-            in = new BufferedInputStream(socket.getInputStream());
-            out = new BufferedOutputStream(socket.getOutputStream());
+            din = new DataInputStream(socket.getInputStream());
+            dout = new DataOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
@@ -162,5 +152,5 @@ public class MainGUI extends Application implements Runnable {
         root.setMaxSize(620, 300);
 
     }
-
+    
 }

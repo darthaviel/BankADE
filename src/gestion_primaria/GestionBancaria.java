@@ -2,8 +2,6 @@ package gestion_primaria;
 
 import elementos_de_banco.Caja;
 import elementos_de_banco.Cliente;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,8 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import tda.lista.LISTA;
@@ -42,11 +38,8 @@ public class GestionBancaria implements Runnable {
         try {
             server = new ServerSocket(PORT);
             socket = server.accept();
-            System.out.println("conectado con interfaz");
-            in = new BufferedInputStream(socket.getInputStream());
-            out = new BufferedOutputStream(socket.getOutputStream());
-            din = new DataInputStream(in);
-            dout = new DataOutputStream(out);
+            din = new DataInputStream(socket.getInputStream());
+            dout = new DataOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
             Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -57,26 +50,15 @@ public class GestionBancaria implements Runnable {
 
     private void menu() {
         try {
+            System.out.println("esperando indicador ciclos");
             String s;
             s = din.readUTF();
             System.out.println(s);
             numero_ciclos = Integer.parseInt(s);
+            System.out.println("ciclos recibidos");
         } catch (IOException ex) {
             Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*Scanner scanint = new Scanner(System.in);
-            while (true) {
-            System.out.println("Cantidad de ciclos");
-            try {
-            numero_ciclos = scanint.nextInt();
-            if (numero_ciclos > 0) {
-            break;
-            }
-            } catch (Exception e) {
-            scanint.next();
-            }
-            System.out.println("Ingrese una cantidad valida \n\n");
-            }*/
 
     }
 
