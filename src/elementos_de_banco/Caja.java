@@ -1,9 +1,9 @@
-
 package elementos_de_banco;
 
-import tda.cola.COLA;
-import tda.pila.PILA;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import alt_tda.cola.COLA;
+import alt_tda.pila.PILA;
 
 public class Caja {
 
@@ -29,20 +29,20 @@ public class Caja {
             detalle_5,
             detalle_2,
             detalle_1;
+
     private long monto_retiros,
-            monto_depositos = -100000,
-            efectivo_en_caja;
+            monto_depositos = -100000;
+
+    private boolean cambio_denominacion = false;
 
     private Cliente cliente_en_ventanilla = null;
-
-    private boolean fondos = true;
 
     public Caja() {
     }
 
     public Caja(int caja) {
         this.caja = caja;
-        distribuir_billetes(100000);
+        distribuir_billetes(100000, false);
     }
 
     public void agregarCliente(Cliente cliente) {
@@ -50,7 +50,7 @@ public class Caja {
     }
 
     public void atender() {
-        System.out.println("Atendiendo en caja "+caja);
+        System.out.println("\nAtendiendo en caja " + caja);
         if (cliente_en_ventanilla != null) {
             System.out.println("Atendiendo cliente en ventanilla.");
             atenderCaso();
@@ -60,52 +60,89 @@ public class Caja {
             clientes_en_cola.SACA_DE_COLA();
             System.out.println("Atendiendo nuevo cliente.");
             atenderCaso();
-        }else{
-            System.out.println("Sin clientes para atender\n");
+        } else {
+            System.out.println("Sin clientes para atender.");
         }
     }
 
-    private void distribuir_billetes(int i) {
-        while (i != 0) {
-            if (i >= 500) {
-                b500.METE(new Billete(500));
-                i -= 500;
-                monto_depositos += 500;
+    private void distribuir_billetes(long i, boolean j) {
+        if (j) {
+            while (i != 0) {
+                if (i >= 1) {
+                    b1.METE(new Billete(1));
+                    i -= 1;
+                }
+                if (i >= 2) {
+                    b2.METE(new Billete(2));
+                    i -= 2;
+                }
+                if (i >= 5) {
+                    b5.METE(new Billete(5));
+                    i -= 5;
+                }
+                if (i >= 10) {
+                    b10.METE(new Billete(10));
+                    i -= 10;
+                }
+                if (i >= 20) {
+                    b20.METE(new Billete(20));
+                    i -= 20;
+                }
+                if (i >= 50) {
+                    b50.METE(new Billete(50));
+                    i -= 50;
+                }
+                if (i >= 100) {
+                    b100.METE(new Billete(100));
+                    i -= 100;
+                }
+                if (i >= 500) {
+                    b500.METE(new Billete(500));
+                    i -= 500;
+                }
             }
-            if (i >= 100) {
-                b100.METE(new Billete(100));
-                i -= 100;
-                monto_depositos += 100;
-            }
-            if (i >= 50) {
-                b50.METE(new Billete(50));
-                i -= 50;
-                monto_depositos += 50;
-            }
-            if (i >= 20) {
-                b20.METE(new Billete(20));
-                i -= 20;
-                monto_depositos += 20;
-            }
-            if (i >= 10) {
-                b10.METE(new Billete(10));
-                i -= 10;
-                monto_depositos += 10;
-            }
-            if (i >= 5) {
-                b5.METE(new Billete(5));
-                i -= 5;
-                monto_depositos += 5;
-            }
-            if (i >= 2) {
-                b2.METE(new Billete(2));
-                i -= 2;
-                monto_depositos += 2;
-            }
-            if (i >= 1) {
-                b1.METE(new Billete(1));
-                i -= 1;
-                monto_depositos += 1;
+        } else {
+            while (i != 0) {
+                if (i >= 500) {
+                    b500.METE(new Billete(500));
+                    i -= 500;
+                    monto_depositos += 500;
+                }
+                if (i >= 100) {
+                    b100.METE(new Billete(100));
+                    i -= 100;
+                    monto_depositos += 100;
+                }
+                if (i >= 50) {
+                    b50.METE(new Billete(50));
+                    i -= 50;
+                    monto_depositos += 50;
+                }
+                if (i >= 20) {
+                    b20.METE(new Billete(20));
+                    i -= 20;
+                    monto_depositos += 20;
+                }
+                if (i >= 10) {
+                    b10.METE(new Billete(10));
+                    i -= 10;
+                    monto_depositos += 10;
+                }
+                if (i >= 5) {
+                    b5.METE(new Billete(5));
+                    i -= 5;
+                    monto_depositos += 5;
+                }
+                if (i >= 2) {
+                    b2.METE(new Billete(2));
+                    i -= 2;
+                    monto_depositos += 2;
+                }
+                if (i >= 1) {
+                    b1.METE(new Billete(1));
+                    i -= 1;
+                    monto_depositos += 1;
+                }
             }
         }
     }
@@ -163,13 +200,25 @@ public class Caja {
             }
 
             if (b1.VACIA() && b2.VACIA() && b5.VACIA() && b10.VACIA() && b20.VACIA() && b50.VACIA() && b100.VACIA() && b500.VACIA() && (i > 0)) {
-                fondos = false;
+                System.out.println("Caja sin fondos, solicitando fondos a la boveda. Por favor espere un momento...");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 return false;
             }
-            
-            if(ii == i){
+
+            if (ii == i) {
+                System.out.println("Petición de cambio de denominaciones, espere un momento...");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
+                }                
+                cambio_denominacion = true;
                 return false;
-            }else{
+            } else {
                 ii = i;
             }
         }
@@ -182,43 +231,57 @@ public class Caja {
                 System.out.println("Transacción: Depósito\n"
                         + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
                 if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
-                    distribuir_billetes(500);
+                    distribuir_billetes(500, false);
                     cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
                     System.out.println("Cliente en atención.\n"
-                            + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion() + "\n");
+                            + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
+                    System.out.println("Fondos en caja: " + (efectivoCaja()));
 
                 } else {
-                    distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
+                    distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion(), false);
                     cliente_en_ventanilla = null;
                     clientes_atendidos++;
-                    System.out.println("Cliente atendido con éxito.\n");
+                    System.out.println("Cliente atendido con éxito.");
+                    System.out.println("Fondos en caja: " + (efectivoCaja()));
                 }
                 break;
-            case 1:
-                System.out.println("Transacción: Retiro\n"
-                        + "Monto faltante:" + cliente_en_ventanilla.getMonto_de_transaccion());
-                if (fondos) {
+            case 1:                
+                if (cambio_denominacion) {
+                    System.out.println("Realizando cambio de denominaciones, espere un momento...");
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    contarBilletesDenominacion();
+                    distribuir_billetes(efectivoCaja(), true);
+                    anularDetalles();
+                    cambio_denominacion = false;
+                } else if (efectivoCaja() == 0) {
+                    System.out.println("Caja sin fondos... Espere mientras se reabastece la caja...");
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    pedirBoveda();
+                } else {
+                    System.out.println("Transacción: Retiro\n"
+                        + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
                     if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
-                        if (!entregar_billetes(500)) {
-                            System.out.println("Transacción incompleta. Caja sin fondos suficientes.");
-                        } else {
-                            System.out.println("Cliente en atención.\n"
-                                    + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion() + "\n");
-                        }
+                        System.out.println("Cliente en atención.");
+                        entregar_billetes(500);
+                        System.out.println("Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
+                        System.out.println("Fondos en caja: " + (efectivoCaja()));
                     } else {
                         entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
-
                         if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
                             cliente_en_ventanilla = null;
                             clientes_atendidos++;
                             System.out.println("Cliente atendido con éxito.");
-                        } else {
-                            System.out.println("Sin moneda para completar la transacción.\n"
-                                    + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion() + "\n");
+                            System.out.println("Fondos en caja: " + (efectivoCaja()));
                         }
                     }
-                } else {
-                    System.out.println("Caja sin fondos.\n");
                 }
                 break;
         }
@@ -228,72 +291,83 @@ public class Caja {
         contarClientesEsper();
         contarBilletesDenominacion();
         efectivoCaja();
-        System.out.println("ESTADISTICAS CAJA "+caja);
-        System.out.println("Clientes atendidos:    "+clientes_atendidos);
-        System.out.println("Clientes en espera:    "+clientes_en_espera);
-        System.out.println("Efectivo en caja:      "+(100000+monto_depositos-monto_retiros));
-        System.out.println("Monto total retiros:   "+monto_retiros);
-        System.out.println("Monto total depositos: "+monto_depositos);
-        System.out.println("Cantiad billetes 1:    "+detalle_1);
-        System.out.println("Cantiad billetes 2:    "+detalle_2);
-        System.out.println("Cantiad billetes 5:    "+detalle_5);
-        System.out.println("Cantiad billetes 10:   "+detalle_10);
-        System.out.println("Cantiad billetes 20:   "+detalle_20);
-        System.out.println("Cantiad billetes 50:   "+detalle_50);
-        System.out.println("Cantiad billetes 100:  "+detalle_100);
-        System.out.println("Cantiad billetes 500:  "+detalle_500+"\n\n");
-        
-        
-        
+        System.out.println("ESTADISTICAS CAJA " + caja);
+        System.out.println("Clientes atendidos:     " + clientes_atendidos);
+        System.out.println("Clientes en espera:     " + clientes_en_espera);
+        System.out.println("Efectivo en caja:       " + (efectivoCaja()));
+        System.out.println("Monto total retiros:    " + monto_retiros);
+        System.out.println("Monto total depositos:  " + monto_depositos);
+        System.out.println("Cantidad billetes 1:    " + detalle_1);
+        System.out.println("Cantidad billetes 2:    " + detalle_2);
+        System.out.println("Cantidad billetes 5:    " + detalle_5);
+        System.out.println("Cantidad billetes 10:   " + detalle_10);
+        System.out.println("Cantidad billetes 20:   " + detalle_20);
+        System.out.println("Cantidad billetes 50:   " + detalle_50);
+        System.out.println("Cantidad billetes 100:  " + detalle_100);
+        System.out.println("Cantidad billetes 500:  " + detalle_500 + "\n\n");
     }
 
     private void contarClientesEsper() {
-        while(!clientes_en_cola.VACIA()){
+        while (!clientes_en_cola.VACIA()) {
             clientes_en_espera++;
             clientes_en_cola.SACA_DE_COLA();
         }
-        if(cliente_en_ventanilla != null){
+        if (cliente_en_ventanilla != null) {
             clientes_en_espera++;
-        };
+        }
     }
 
     private void contarBilletesDenominacion() {
-        while(!b1.VACIA()){
+        while (!b1.VACIA()) {
             detalle_1++;
             b1.SACA();
         }
-        while(!b2.VACIA()){
+        while (!b2.VACIA()) {
             detalle_2++;
             b2.SACA();
         }
-        while(!b5.VACIA()){
+        while (!b5.VACIA()) {
             detalle_5++;
             b5.SACA();
         }
-        while(!b10.VACIA()){
+        while (!b10.VACIA()) {
             detalle_10++;
             b10.SACA();
         }
-        while(!b20.VACIA()){
+        while (!b20.VACIA()) {
             detalle_20++;
             b20.SACA();
         }
-        while(!b50.VACIA()){
+        while (!b50.VACIA()) {
             detalle_50++;
             b50.SACA();
         }
-        while(!b100.VACIA()){
+        while (!b100.VACIA()) {
             detalle_100++;
             b100.SACA();
         }
-        while(!b500.VACIA()){
+        while (!b500.VACIA()) {
             detalle_500++;
             b500.SACA();
         }
     }
 
-    private void efectivoCaja() {
-        efectivo_en_caja = detalle_1+(detalle_2*2)+(detalle_5*5)+(detalle_10*10)+(detalle_20*20)+(detalle_50*50)+(detalle_100*100)+(detalle_500*500);
+    private long efectivoCaja() {
+        return (100000 - monto_retiros + monto_depositos);
     }
 
+    private void anularDetalles() {
+        detalle_1 = 0;
+        detalle_2 = 0;
+        detalle_5 = 0;
+        detalle_10 = 0;
+        detalle_20 = 0;
+        detalle_50 = 0;
+        detalle_100 = 0;
+        detalle_500 = 0;
+    }
+
+    private void pedirBoveda() {
+        distribuir_billetes(100000, false);
+    }
 }

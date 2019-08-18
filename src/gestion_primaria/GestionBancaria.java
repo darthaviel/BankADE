@@ -29,7 +29,6 @@ public class GestionBancaria implements Runnable {
     @Override
     public void run() {
         init();
-        menu();
         ciclo();
         estadisticas();
     }
@@ -48,21 +47,15 @@ public class GestionBancaria implements Runnable {
         }
     }
 
-    private void menu() {
+    private void ciclo() {
         try {
-            System.out.println("esperando indicador ciclos");
             String s;
             s = din.readUTF();
             System.out.println(s);
             numero_ciclos = Integer.parseInt(s);
-            System.out.println("ciclos recibidos");
         } catch (IOException ex) {
             Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-    }
-
-    private void ciclo() {
         int numero_caja;
         Caja caja_en_gestion;
         for (; numero_ciclos > 0; numero_ciclos--) {

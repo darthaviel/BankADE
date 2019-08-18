@@ -66,7 +66,6 @@ public class MainGUI extends Application implements Runnable {
                     try {
                         dout.writeUTF(intf);
                         dout.flush();
-                        dout.close();
                     } catch (Exception ex) {
 
                     }
