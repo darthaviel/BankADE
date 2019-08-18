@@ -15,6 +15,7 @@ public class Caja {
     private PILA b5 = new PILA();
     private PILA b2 = new PILA();
     private PILA b1 = new PILA();
+    private String resumen;
 
     private COLA clientes_en_cola = new COLA();
 

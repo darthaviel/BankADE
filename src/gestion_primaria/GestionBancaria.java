@@ -26,6 +26,13 @@ public class GestionBancaria implements Runnable {
 
     int PORT = 1025;
 
+    String comunicacion;
+    //Nuevo cliente
+    // EN|... variante para cambio de root node
+    // N|#ciclo|#caja
+    //Caja atendiendo
+    // C|#caja|#estado|#transaccion|#monto|#entrega|#faltante|#adicionales
+
     @Override
     public void run() {
         init();
@@ -53,16 +60,25 @@ public class GestionBancaria implements Runnable {
             s = din.readUTF();
             System.out.println(s);
             numero_ciclos = Integer.parseInt(s);
+            comunicacion = "E";
         } catch (IOException ex) {
             Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }
         int numero_caja;
         Caja caja_en_gestion;
-        for (; numero_ciclos > 0; numero_ciclos--) {
+        for (int j = 0; numero_ciclos > j; j++) {
             numero_caja = ((int) (Math.random() * 6)) + 1;
             caja_en_gestion = (Caja) cajas.RECUPERA(numero_caja);
             caja_en_gestion.agregarCliente(new Cliente(numero_caja, (int) (Math.random() * 2), ((int) (Math.random() * 10000)) + 1));
             System.out.println("\nNUEVO CLIENTE AGREGADO A LA CAJA " + numero_caja + "\n");
+            comunicacion = comunicacion + "N|" + j + "|" + numero_caja;
+            try {
+                dout.writeUTF(comunicacion);
+                dout.flush();
+            } catch (IOException ex) {
+                Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             cajas.SUPRIME(numero_caja);
             cajas.INSERTA(caja_en_gestion, numero_caja);
             for (int i = 0; i < 6; i++) {

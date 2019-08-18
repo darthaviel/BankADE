@@ -25,28 +25,30 @@ import javafx.stage.StageStyle;
 
 public class MainGUI extends Application implements Runnable {
 
-    Label caja,
+    private Label caja,
             estado,
             transaccion,
             monto,
             entrega,
             monto_faltante,
             indicador_ciclos;
-    TextField ciclos;
-    HBox root,
+    private TextField ciclos;
+    private HBox root,
             root1;
-    VBox home, text;
-    Button startsim,
+    private VBox home, text;
+    private Button startsim,
             exit;
-    Pane espaciador,
+    private Pane espaciador,
             caja_fondo,
             caja_numero,
             cliente,
             spacer0,
             spacer1;
-    Socket socket;
-    DataOutputStream dout;
-    DataInputStream din;
+    private Socket socket;
+    private DataOutputStream dout;
+    private DataInputStream din;
+    private Scene scene;
+    private Stage sta;
 
     @Override
     public void run() {
@@ -56,23 +58,8 @@ public class MainGUI extends Application implements Runnable {
     @Override
     public void start(Stage stage) throws Exception {
 
-        startsim.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                String intf;
-                intf = ciclos.getText();
-                if (intf.trim().length() > 0) {
-                    ciclos.setText("0");
-                    try {
-                        dout.writeUTF(intf);
-                        dout.flush();
-                    } catch (Exception ex) {
+        startsim.setOnAction(e -> startSim());
 
-                    }
-                }
-
-            }
-        });
         exit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -80,11 +67,12 @@ public class MainGUI extends Application implements Runnable {
             }
         });
 
-        Scene scene = new Scene(root);
+        scene = new Scene(root);
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setScene(scene);
-        stage.show();
+        sta = stage;
+        sta.initStyle(StageStyle.TRANSPARENT);
+        sta.setScene(scene);
+        sta.show();
     }
 
     @Override
@@ -151,5 +139,38 @@ public class MainGUI extends Application implements Runnable {
         root.setMaxSize(620, 300);
 
     }
-    
+
+    private void startSim() {
+        String s;
+        s = ciclos.getText();
+        if (s.trim().length() > 0) {
+            if (Integer.parseInt(s) > 0) {
+                try {
+                    dout.writeUTF(s);
+                    dout.flush();
+                    Runnable sim = () -> runSim(din, dout);
+                    Thread bgthread = new Thread(sim);
+                    bgthread.setDaemon(true);
+                    bgthread.start();
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    private void runSim(DataInputStream in, DataOutputStream out) {
+        while (true) {
+            String s;
+            try {
+                s = in.readUTF();
+                if (s.contains("E")) {
+                    Platform.runLater(() -> sta.getScene().setRoot(root1));
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
 }
