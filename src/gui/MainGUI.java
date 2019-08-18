@@ -1,10 +1,14 @@
-
 package gui;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -16,13 +20,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 
 public class MainGUI extends Application implements Runnable {
 
@@ -36,8 +40,7 @@ public class MainGUI extends Application implements Runnable {
     TextField ciclos;
     HBox root,
             root1;
-    VBox home
-            ,text;
+    VBox home, text;
     Button startsim,
             exit;
     Pane espaciador,
@@ -47,8 +50,10 @@ public class MainGUI extends Application implements Runnable {
             spacer0,
             spacer1;
     Socket socket;
-    BufferedOutputStream out;
-    BufferedInputStream in;
+    OutputStream out;
+    InputStream in;
+    DataOutputStream dout;
+    DataInputStream din;
 
     @Override
     public void run() {
@@ -57,20 +62,35 @@ public class MainGUI extends Application implements Runnable {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
-        startsim.setOnAction(new EventHandler<ActionEvent>(){
+
+        startsim.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                
+                String intf;
+                intf = ciclos.getText();
+                System.out.println(ciclos.getText());
+                if (intf.trim().length() > 0) {
+                    ciclos.setText("1");
+                    try {
+
+                        dout.writeUTF(intf);
+                        dout.flush();
+                        dout.close();
+
+                    } catch (Exception ex) {
+
+                    }
+                }
+
             }
         });
-        exit.setOnAction(new EventHandler<ActionEvent>(){
+        exit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
             }
         });
-        
+
         Scene scene = new Scene(root);
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         stage.initStyle(StageStyle.TRANSPARENT);
@@ -90,7 +110,18 @@ public class MainGUI extends Application implements Runnable {
         } catch (InterruptedException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String text = change.getText();
+
+            if (text.matches("[0-9]*")) {
+                return change;
+            }
+
+            return null;
+        };
+        TextFormatter<String> textFormatter = new TextFormatter<>(filter);
+
         exit = new Button("Exit");
         spacer0 = new Pane();
         spacer1 = new Pane();
@@ -103,13 +134,11 @@ public class MainGUI extends Application implements Runnable {
         indicador_ciclos = new Label("CICLOS");
         espaciador = new Pane();
         espaciador.setMinHeight(30);
-        //espaciador.setStyle("-fx-background-color: TRANSAPRENT");
         text = new VBox(spacer0, caja, estado, transaccion, monto, entrega, monto_faltante, espaciador, indicador_ciclos);
         text.setSpacing(10);
         text.setMinSize(300, 300);
         text.setMaxSize(300, 300);
         text.setSpacing(10);
-        //text.setStyle("-fx-background-color: #FFFFFF");
         caja_numero = new Pane();
         cliente = new Pane();
         caja_fondo = new Pane(caja_numero, cliente);
@@ -121,16 +150,17 @@ public class MainGUI extends Application implements Runnable {
         root1.setSpacing(10);
         root1.setMinSize(620, 300);
         root1.setMaxSize(620, 300);
-        
+
         ciclos = new TextField();
         ciclos.setAlignment(Pos.CENTER);
+        ciclos.setTextFormatter(textFormatter);
         startsim = new Button("Iniciar simulacion");
-        
-        home = new VBox(ciclos,startsim);
+
+        home = new VBox(ciclos, startsim);
         root = new HBox(home);
         root.setMinSize(620, 300);
         root.setMaxSize(620, 300);
-        
+
     }
 
 }

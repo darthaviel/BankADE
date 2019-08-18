@@ -9,6 +9,7 @@ module BankADE {
     requires javafx.controls;
     requires javafx.graphics;
     requires java.logging;
+    requires java.desktop;
     
     exports gui;
 }
