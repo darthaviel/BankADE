@@ -13,8 +13,18 @@ public class BankADE {
     
     public static void main(String[] args) {
         
-        new Thread(new GestionBancaria()).start();
-        new Thread(new MainGUI()).start();
+        Thread backgroundBankAde = new Thread(new GestionBancaria());
+        Thread GUIBankAde = new Thread(new MainGUI());
+        
+        backgroundBankAde.start();
+        GUIBankAde.start();
+        
+        /*while(true){
+            if(!GUIBankAde.isAlive()){
+                backgroundBankAde.interrupt();
+                break;
+            }
+        }*/
         
     }
     

@@ -1,7 +1,5 @@
 package elementos_de_banco;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import alt_tda.cola.COLA;
 import alt_tda.pila.PILA;
 
@@ -54,15 +52,18 @@ public class Caja {
         System.out.println("\nAtendiendo en caja " + caja);
         if (cliente_en_ventanilla != null) {
             System.out.println("Atendiendo cliente en ventanilla.");
+            resumen = "2|";
             atenderCaso();
 
         } else if (!clientes_en_cola.VACIA()) {
             cliente_en_ventanilla = (Cliente) clientes_en_cola.FRENTE();
             clientes_en_cola.SACA_DE_COLA();
             System.out.println("Atendiendo nuevo cliente.");
+            resumen = "1|";
             atenderCaso();
         } else {
             System.out.println("Sin clientes para atender.");
+            resumen = "1|0|0|0|0|0";
         }
     }
 
@@ -202,22 +203,14 @@ public class Caja {
 
             if (b1.VACIA() && b2.VACIA() && b5.VACIA() && b10.VACIA() && b20.VACIA() && b50.VACIA() && b100.VACIA() && b500.VACIA() && (i > 0)) {
                 System.out.println("Caja sin fondos, solicitando fondos a la boveda. Por favor espere un momento...");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                resumen = resumen + "3";
                 return false;
             }
 
             if (ii == i) {
                 System.out.println("Petición de cambio de denominaciones, espere un momento...");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
-                }                
                 cambio_denominacion = true;
+                resumen = resumen + "4";
                 return false;
             } else {
                 ii = i;
@@ -231,14 +224,17 @@ public class Caja {
             case 0:
                 System.out.println("Transacción: Depósito\n"
                         + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
+                resumen = resumen + "0|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
                 if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
                     distribuir_billetes(500, false);
+                    resumen = resumen + "500|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|0";
                     cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
                     System.out.println("Cliente en atención.\n"
                             + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
                     System.out.println("Fondos en caja: " + (efectivoCaja()));
 
                 } else {
+                    resumen = resumen + cliente_en_ventanilla.getMonto_de_transaccion() + "|0|1";
                     distribuir_billetes(cliente_en_ventanilla.getMonto_de_transaccion(), false);
                     cliente_en_ventanilla = null;
                     clientes_atendidos++;
@@ -246,37 +242,36 @@ public class Caja {
                     System.out.println("Fondos en caja: " + (efectivoCaja()));
                 }
                 break;
-            case 1:                
+            case 1:
+                resumen = resumen + "1|";
                 if (cambio_denominacion) {
+                    resumen = resumen + "-1|-1|-1|0";
                     System.out.println("Realizando cambio de denominaciones, espere un momento...");
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                     contarBilletesDenominacion();
                     distribuir_billetes(efectivoCaja(), true);
                     anularDetalles();
                     cambio_denominacion = false;
                 } else if (efectivoCaja() == 0) {
+                    resumen = resumen + "-1|-1|-1|1";
                     System.out.println("Caja sin fondos... Espere mientras se reabastece la caja...");
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Caja.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                     pedirBoveda();
                 } else {
+                    int ini = cliente_en_ventanilla.getMonto_de_transaccion();
+                    resumen = resumen + ini + "|";
                     System.out.println("Transacción: Retiro\n"
-                        + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
-                    if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
+                            + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
+                    if (ini > 500) {
                         System.out.println("Cliente en atención.");
                         entregar_billetes(500);
                         System.out.println("Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
                         System.out.println("Fondos en caja: " + (efectivoCaja()));
+                        resumen = resumen + (ini - cliente_en_ventanilla.getMonto_de_transaccion()) + "|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
                     } else {
+                        resumen = resumen + cliente_en_ventanilla.getMonto_de_transaccion() + "|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
                         entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
+                        resumen = resumen + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
                         if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
+                            resumen = resumen + "2";
                             cliente_en_ventanilla = null;
                             clientes_atendidos++;
                             System.out.println("Cliente atendido con éxito.");
@@ -370,5 +365,10 @@ public class Caja {
 
     private void pedirBoveda() {
         distribuir_billetes(100000, false);
+    }
+
+    public String resumenGestion() {
+
+        return resumen;
     }
 }

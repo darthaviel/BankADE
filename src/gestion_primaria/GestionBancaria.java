@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import tda.lista.LISTA;
 
 public class GestionBancaria implements Runnable {
@@ -29,7 +30,7 @@ public class GestionBancaria implements Runnable {
     String comunicacion;
     //Nuevo cliente
     // EN|... variante para cambio de root node
-    // N|#ciclo|#caja
+    // N|#caja|#ciclo
     //Caja atendiendo
     // C|#caja|#estado|#transaccion|#monto|#entrega|#faltante|#adicionales
 
@@ -71,14 +72,21 @@ public class GestionBancaria implements Runnable {
             caja_en_gestion = (Caja) cajas.RECUPERA(numero_caja);
             caja_en_gestion.agregarCliente(new Cliente(numero_caja, (int) (Math.random() * 2), ((int) (Math.random() * 10000)) + 1));
             System.out.println("\nNUEVO CLIENTE AGREGADO A LA CAJA " + numero_caja + "\n");
-            comunicacion = comunicacion + "N|" + j + "|" + numero_caja;
+            comunicacion = comunicacion + "N|" + numero_caja + "|" + (j + 1);
             try {
                 dout.writeUTF(comunicacion);
                 dout.flush();
+                if (din.readUTF().equals("x")) {
+                    Thread.interrupted();
+                }
+                Thread.sleep(3000);
             } catch (IOException ex) {
                 Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            System.out.println(comunicacion);
+            comunicacion = "";
             cajas.SUPRIME(numero_caja);
             cajas.INSERTA(caja_en_gestion, numero_caja);
             for (int i = 0; i < 6; i++) {
@@ -86,9 +94,19 @@ public class GestionBancaria implements Runnable {
                 cajas.SUPRIME(i + 1);
                 caja_en_gestion.atender();
                 cajas.INSERTA(caja_en_gestion, i + 1);
+                comunicacion = "C|" + (i + 1) + "|" + caja_en_gestion.resumenGestion();
                 try {
-                    Thread.sleep(500);
+                    dout.writeUTF(comunicacion);
+                    dout.flush();
+                    System.out.println(comunicacion);
+                    comunicacion = "";
+                    if (din.readUTF().equals("x")) {
+                        Thread.interrupted();
+                    }
+                    Thread.sleep(7000);
                 } catch (InterruptedException ex) {
+                    Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
                     Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
