@@ -17,6 +17,7 @@ import tda.lista.LISTA;
 public class GestionBancaria implements Runnable {
 
     private int numero_ciclos;
+    private int delay = 3000;
     private LISTA cajas = new LISTA();
     Socket socket;
     ServerSocket server;
@@ -72,14 +73,14 @@ public class GestionBancaria implements Runnable {
             caja_en_gestion = (Caja) cajas.RECUPERA(numero_caja);
             caja_en_gestion.agregarCliente(new Cliente(numero_caja, (int) (Math.random() * 2), ((int) (Math.random() * 10000)) + 1));
             System.out.println("\nNUEVO CLIENTE AGREGADO A LA CAJA " + numero_caja + "\n");
-            comunicacion = comunicacion + "N|" + numero_caja + "|" + (j + 1);
+            comunicacion = comunicacion + "N|" + numero_caja + "|" + (j + 1)+"|0|0|0|0|0";
             try {
                 dout.writeUTF(comunicacion);
                 dout.flush();
                 if (din.readUTF().equals("x")) {
                     Thread.interrupted();
                 }
-                Thread.sleep(3000);
+                Thread.sleep(delay);
             } catch (IOException ex) {
                 Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
@@ -103,7 +104,7 @@ public class GestionBancaria implements Runnable {
                     if (din.readUTF().equals("x")) {
                         Thread.interrupted();
                     }
-                    Thread.sleep(7000);
+                    Thread.sleep(delay);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
@@ -115,18 +116,25 @@ public class GestionBancaria implements Runnable {
     }
 
     private void estadisticas() {
+        comunicacion = "C|";
         Caja caja_en_gestion = null;
         System.out.println("Ciclos concluidos\n\n\n");
         for (int i = 0; i < 6; i++) {
             caja_en_gestion = (Caja) cajas.RECUPERA(i + 1);
             cajas.SUPRIME(i + 1);
             caja_en_gestion.mostrarEstadistica();
+            comunicacion = comunicacion+ caja_en_gestion.estadisticaCaja()+"|";
             cajas.INSERTA(caja_en_gestion, i + 1);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        }
+        comunicacion = comunicacion + "T";
+        try {
+            dout.writeUTF(comunicacion);
+            dout.flush();
+            dout.close();
+            din.close();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

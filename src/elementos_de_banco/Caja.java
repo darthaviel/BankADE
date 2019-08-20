@@ -13,7 +13,9 @@ public class Caja {
     private PILA b5 = new PILA();
     private PILA b2 = new PILA();
     private PILA b1 = new PILA();
-    private String resumen;
+    private String resumen,
+            adicionales,
+            estadistica;
 
     private COLA clientes_en_cola = new COLA();
 
@@ -63,7 +65,7 @@ public class Caja {
             atenderCaso();
         } else {
             System.out.println("Sin clientes para atender.");
-            resumen = "1|0|0|0|0|0";
+            resumen = "0|-1|0|0|0|0";
         }
     }
 
@@ -203,14 +205,14 @@ public class Caja {
 
             if (b1.VACIA() && b2.VACIA() && b5.VACIA() && b10.VACIA() && b20.VACIA() && b50.VACIA() && b100.VACIA() && b500.VACIA() && (i > 0)) {
                 System.out.println("Caja sin fondos, solicitando fondos a la boveda. Por favor espere un momento...");
-                resumen = resumen + "3";
+                adicionales = "3";
                 return false;
             }
 
             if (ii == i) {
                 System.out.println("Petición de cambio de denominaciones, espere un momento...");
                 cambio_denominacion = true;
-                resumen = resumen + "4";
+                adicionales = "4";
                 return false;
             } else {
                 ii = i;
@@ -227,8 +229,8 @@ public class Caja {
                 resumen = resumen + "0|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
                 if (cliente_en_ventanilla.getMonto_de_transaccion() > 500) {
                     distribuir_billetes(500, false);
-                    resumen = resumen + "500|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|0";
                     cliente_en_ventanilla.setMonto_de_transaccion(cliente_en_ventanilla.getMonto_de_transaccion() - 500);
+                    resumen = resumen + "500|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|0";
                     System.out.println("Cliente en atención.\n"
                             + "Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
                     System.out.println("Fondos en caja: " + (efectivoCaja()));
@@ -265,17 +267,19 @@ public class Caja {
                         entregar_billetes(500);
                         System.out.println("Monto faltante: " + cliente_en_ventanilla.getMonto_de_transaccion());
                         System.out.println("Fondos en caja: " + (efectivoCaja()));
-                        resumen = resumen + (ini - cliente_en_ventanilla.getMonto_de_transaccion()) + "|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
+                        resumen = resumen + (ini - cliente_en_ventanilla.getMonto_de_transaccion()) + "|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|"+adicionales;
                     } else {
-                        resumen = resumen + cliente_en_ventanilla.getMonto_de_transaccion() + "|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
+                        int i = cliente_en_ventanilla.getMonto_de_transaccion();
                         entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
-                        resumen = resumen + cliente_en_ventanilla.getMonto_de_transaccion() + "|";
+                        resumen = resumen + i + "|" + (i -cliente_en_ventanilla.getMonto_de_transaccion()) + "|"+cliente_en_ventanilla.getMonto_de_transaccion()+"|";
                         if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
                             resumen = resumen + "2";
                             cliente_en_ventanilla = null;
                             clientes_atendidos++;
                             System.out.println("Cliente atendido con éxito.");
                             System.out.println("Fondos en caja: " + (efectivoCaja()));
+                        }else{
+                            resumen = resumen + adicionales;
                         }
                     }
                 }
@@ -301,6 +305,7 @@ public class Caja {
         System.out.println("Cantidad billetes 50:   " + detalle_50);
         System.out.println("Cantidad billetes 100:  " + detalle_100);
         System.out.println("Cantidad billetes 500:  " + detalle_500 + "\n\n");
+        estadistica = clientes_atendidos+"#"+clientes_en_espera+"#"+efectivoCaja()+"#"+monto_retiros+"#"+monto_depositos+"#"+detalle_1+"#"+detalle_2+"#"+detalle_5+"#"+detalle_10+"#"+detalle_20+"#"+detalle_50+"#"+detalle_100+"#"+detalle_500;
     }
 
     private void contarClientesEsper() {
@@ -370,5 +375,9 @@ public class Caja {
     public String resumenGestion() {
 
         return resumen;
+    }
+    
+    public String estadisticaCaja(){
+        return estadistica;
     }
 }

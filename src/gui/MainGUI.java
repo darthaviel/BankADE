@@ -65,6 +65,14 @@ public class MainGUI extends Application implements Runnable {
         exit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
+                try {
+                    dout.writeUTF("x");
+                    dout.flush();
+                    dout.close();
+                    din.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 Platform.exit();
             }
         });
@@ -75,16 +83,6 @@ public class MainGUI extends Application implements Runnable {
         sta.initStyle(StageStyle.TRANSPARENT);
         sta.setScene(scene);
         sta.show();
-    }
-
-    @Override
-    public void stop() {
-        try {
-            dout.writeUTF("x");
-            dout.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     @Override
@@ -179,35 +177,38 @@ public class MainGUI extends Application implements Runnable {
                 String z = in.readUTF();
                 out.writeUTF("k");
                 out.flush();
-                System.out.println("gui "+z);
+                System.out.println("gui " + z);
                 StringTokenizer s = new StringTokenizer(z, "|");
-              
-                switch (s.nextToken()) {
+                String[] c = new String[8];
+                for (int i = 0; i < 8; i++) {
+                    c[i] = s.nextToken();
+                }
+
+                switch (c[0]) {
                     case "EN":
                         Platform.runLater(() -> sta.getScene().setRoot(root1));
                         Platform.runLater(() -> caja.setText("Nuevo cliente agregado"));
-                        Platform.runLater(() -> estado.setText("Caja: " + s.nextToken()));
+                        Platform.runLater(() -> estado.setText("Caja: " + c[1]));
                         Platform.runLater(() -> transaccion.setText(""));
                         Platform.runLater(() -> monto.setText(""));
                         Platform.runLater(() -> entrega.setText(""));
                         Platform.runLater(() -> monto_faltante.setText(""));
                         Platform.runLater(() -> adicional.setText(""));
-                        Platform.runLater(() -> indicador_ciclos.setText("cilo: " + s.nextToken()));
+                        Platform.runLater(() -> indicador_ciclos.setText("cilo: " + c[2]));
                         break;
                     case "N":
                         Platform.runLater(() -> caja.setText("Nuevo cliente agregado"));
-                        Platform.runLater(() -> estado.setText("Caja: " + s.nextToken()));
+                        Platform.runLater(() -> estado.setText("Caja: " + c[1]));
                         Platform.runLater(() -> transaccion.setText(""));
                         Platform.runLater(() -> monto.setText(""));
                         Platform.runLater(() -> entrega.setText(""));
                         Platform.runLater(() -> monto_faltante.setText(""));
                         Platform.runLater(() -> adicional.setText(""));
-                        Platform.runLater(() -> indicador_ciclos.setText("cilo: " + s.nextToken()));
+                        Platform.runLater(() -> indicador_ciclos.setText("cilo: " + c[2]));
                         break;
                     case "C":
-                        Platform.runLater(() -> caja.setText("Caja: " + s.nextToken()));
-                        String st = s.nextToken();
-                        switch (st) {
+                        Platform.runLater(() -> caja.setText("Caja: " + c[1]));
+                        switch (c[2]) {
                             case "0":
                                 Platform.runLater(() -> estado.setText("Sin clientes"));
                                 Platform.runLater(() -> transaccion.setText(""));
@@ -218,109 +219,55 @@ public class MainGUI extends Application implements Runnable {
                                 break;
                             case "1":
                                 Platform.runLater(() -> estado.setText("Atendiendo nuevo cleinte"));
-                                switch (s.nextToken()) {
-                                    case "0":
-                                        Platform.runLater(() -> transaccion.setText("Deposito"));
-                                        Platform.runLater(() -> monto.setText("Monto: " + s.nextToken()));
-                                        Platform.runLater(() -> entrega.setText("Entrega: " + s.nextToken()));
-                                        Platform.runLater(() -> monto_faltante.setText("Faltante: " + s.nextToken()));
-                                        switch (s.nextToken()) {
-                                            case "0":
-                                                Platform.runLater(() -> adicional.setText(""));
-                                                break;
-                                            case "1":
-                                                Platform.runLater(() -> adicional.setText("Cliente atendido"));
-                                                break;
-
-                                        }
-                                        break;
-                                    case "1":
-                                        Platform.runLater(() -> transaccion.setText("Retiro"));
-                                        String t = s.nextToken();
-                                        switch (t) {
-                                            case "-1":
-                                                Platform.runLater(() -> monto.setText(""));
-                                                Platform.runLater(() -> entrega.setText(""));
-                                                s.nextToken();
-                                                Platform.runLater(() -> monto_faltante.setText(""));
-                                                s.nextToken();
-                                                break;
-                                            default:
-                                                Platform.runLater(() -> monto.setText("Monto: " + t));
-                                                Platform.runLater(() -> entrega.setText("Entrega: " + s.nextToken()));
-                                                Platform.runLater(() -> monto_faltante.setText("Faltante: " + s.nextToken()));
-                                        }
-                                        switch (s.nextToken()) {
-                                            case "0":
-                                                Platform.runLater(() -> adicional.setText("Realizando cambio denominacion"));
-                                                break;
-                                            case "1":
-                                                Platform.runLater(() -> adicional.setText("Reabasteciendo caja"));
-                                                break;
-                                            case "2":
-                                                Platform.runLater(() -> adicional.setText("Cliente atendido"));
-                                                break;
-                                            case "3":
-                                                Platform.runLater(() -> adicional.setText("Caja sin fondos"));
-                                                break;
-                                            case "4":
-                                                Platform.runLater(() -> adicional.setText("Caja sin cambio"));
-                                                break;
-                                        }
-                                        break;
-                                }
                                 break;
                             case "2":
                                 Platform.runLater(() -> estado.setText("Atendiendo cliente en ventanilla"));
-                                switch (s.nextToken()) {
+                                break;
+                        }
+                        switch (c[3]) {
+                            case "0":
+                                Platform.runLater(() -> transaccion.setText("Deposito"));
+                                Platform.runLater(() -> monto.setText("Monto: " + c[4]));
+                                Platform.runLater(() -> entrega.setText("Entrega: " + c[5]));
+                                Platform.runLater(() -> monto_faltante.setText("Faltante: " + c[6]));
+                                switch (c[7]) {
                                     case "0":
-                                        Platform.runLater(() -> transaccion.setText("Deposito"));
-                                        Platform.runLater(() -> monto.setText("Monto: " + s.nextToken()));
-                                        Platform.runLater(() -> entrega.setText("Entrega: " + s.nextToken()));
-                                        Platform.runLater(() -> monto_faltante.setText("Faltante: " + s.nextToken()));
-                                        switch (s.nextToken()) {
-                                            case "0":
-                                                Platform.runLater(() -> adicional.setText(""));
-                                                break;
-                                            case "1":
-                                                Platform.runLater(() -> adicional.setText("Cliente atendido"));
-                                                break;
-
-                                        }
+                                        Platform.runLater(() -> adicional.setText(""));
                                         break;
                                     case "1":
-                                        Platform.runLater(() -> transaccion.setText("Retiro"));
-                                        String t = s.nextToken();
-                                        switch (t) {
-                                            case "-1":
-                                                Platform.runLater(() -> monto.setText(""));
-                                                Platform.runLater(() -> entrega.setText(""));
-                                                s.nextToken();
-                                                Platform.runLater(() -> monto_faltante.setText(""));
-                                                s.nextToken();
-                                                break;
-                                            default:
-                                                Platform.runLater(() -> monto.setText("Monto: " + t));
-                                                Platform.runLater(() -> entrega.setText("Entrega: " + s.nextToken()));
-                                                Platform.runLater(() -> monto_faltante.setText("Faltante: " + s.nextToken()));
-                                        }
-                                        switch (s.nextToken()) {
-                                            case "0":
-                                                Platform.runLater(() -> adicional.setText("Realizando cambio denominacion"));
-                                                break;
-                                            case "1":
-                                                Platform.runLater(() -> adicional.setText("Reabasteciendo caja"));
-                                                break;
-                                            case "2":
-                                                Platform.runLater(() -> adicional.setText("Cliente atendido"));
-                                                break;
-                                            case "3":
-                                                Platform.runLater(() -> adicional.setText("Caja sin fondos"));
-                                                break;
-                                            case "4":
-                                                Platform.runLater(() -> adicional.setText("Caja sin cambio"));
-                                                break;
-                                        }
+                                        Platform.runLater(() -> adicional.setText("Cliente atendido"));
+                                        break;
+
+                                }
+                                break;
+                            case "1":
+                                Platform.runLater(() -> transaccion.setText("Retiro"));
+                                switch (c[4]) {
+                                    case "-1":
+                                        Platform.runLater(() -> monto.setText(""));
+                                        Platform.runLater(() -> entrega.setText(""));
+                                        Platform.runLater(() -> monto_faltante.setText(""));
+                                        break;
+                                    default:
+                                        Platform.runLater(() -> monto.setText("Monto: " + c[4]));
+                                        Platform.runLater(() -> entrega.setText("Entrega: " + c[5]));
+                                        Platform.runLater(() -> monto_faltante.setText("Faltante: " + c[6]));
+                                }
+                                switch (c[7]) {
+                                    case "0":
+                                        Platform.runLater(() -> adicional.setText("Realizando cambio denominacion"));
+                                        break;
+                                    case "1":
+                                        Platform.runLater(() -> adicional.setText("Reabasteciendo caja"));
+                                        break;
+                                    case "2":
+                                        Platform.runLater(() -> adicional.setText("Cliente atendido"));
+                                        break;
+                                    case "3":
+                                        Platform.runLater(() -> adicional.setText("Caja sin fondos"));
+                                        break;
+                                    case "4":
+                                        Platform.runLater(() -> adicional.setText("Caja sin cambio"));
                                         break;
                                 }
                                 break;

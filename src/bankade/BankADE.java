@@ -19,12 +19,6 @@ public class BankADE {
         backgroundBankAde.start();
         GUIBankAde.start();
         
-        /*while(true){
-            if(!GUIBankAde.isAlive()){
-                backgroundBankAde.interrupt();
-                break;
-            }
-        }*/
         
     }
     
