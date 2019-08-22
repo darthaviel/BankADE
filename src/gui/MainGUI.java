@@ -21,69 +21,34 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class MainGUI extends Application implements Runnable {
 
-    private Label caja,
-            estado,
-            transaccion,
-            monto,
-            entrega,
-            monto_faltante,
-            adicional,
-            indicador_ciclos;
+    private Label[] prosout = new Label[8];
+    private Label[][] resumout = new Label[7][16];
+
+    private VBox[] vresumout = new VBox[7];
+    private VBox[] base = new VBox[2];
+
+    private Pane[] espaciadores = new Pane[4];
+    private Pane[] impane = new Pane[3];
+
     private TextField ciclos;
-    private HBox root,
-            root1;
-    private VBox home, text;
-    private Button startsim,
-            exit;
-    private Pane espaciador,
-            caja_fondo,
-            caja_numero,
-            cliente,
-            spacer0,
-            spacer1;
+
+    private HBox[] root = new HBox[3];
+
+    private Button[] btn = new Button[7];
+
     private Socket socket;
+
     private DataOutputStream dout;
     private DataInputStream din;
+
     private Scene scene;
     private Stage sta;
-
-    @Override
-    public void run() {
-        Application.launch();
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-
-        startsim.setOnAction(e -> startSim());
-
-        exit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                try {
-                    dout.writeUTF("x");
-                    dout.flush();
-                    dout.close();
-                    din.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                Platform.exit();
-            }
-        });
-
-        scene = new Scene(root);
-        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        sta = stage;
-        sta.initStyle(StageStyle.TRANSPARENT);
-        sta.setScene(scene);
-        sta.show();
-    }
 
     @Override
     public void init() {
@@ -107,48 +72,109 @@ public class MainGUI extends Application implements Runnable {
 
             return null;
         };
+
         TextFormatter<String> textFormatter = new TextFormatter<>(filter);
 
-        exit = new Button("Exit");
-        spacer0 = new Pane();
-        spacer1 = new Pane();
-        caja = new Label("");
-        estado = new Label("");
-        transaccion = new Label("");
-        monto = new Label("");
-        entrega = new Label("");
-        monto_faltante = new Label("");
-        adicional = new Label("");
-        indicador_ciclos = new Label("");
-        espaciador = new Pane();
-        espaciador.setMinHeight(30);
-        text = new VBox(spacer0, caja, estado, transaccion, monto, entrega, monto_faltante, adicional, espaciador, indicador_ciclos);
-        text.setSpacing(10);
-        text.setMinSize(300, 300);
-        text.setMaxSize(300, 300);
-        text.setSpacing(10);
-        caja_numero = new Pane();
-        cliente = new Pane();
-        caja_fondo = new Pane(caja_numero, cliente);
-        caja_fondo.setMinSize(300, 300);
-        caja_fondo.setMaxSize(300, 300);
-        caja_fondo.setStyle("-fx-background-color: #000000");
-        root1 = new HBox(exit, text, caja_fondo);
-        root1.setStyle("-fx-background-color: #FFFFFF");
-        root1.setSpacing(10);
-        root1.setMinSize(620, 300);
-        root1.setMaxSize(620, 300);
+        for (int i = 0; i < prosout.length; i++) {
+            prosout[i] = new Label();
+        }
 
+        for (int i = 0; i < resumout.length; i++) {
+            for (int j = 0; j < resumout[i].length; j++) {
+                resumout[i][j] = new Label();
+            }
+        }
+
+        for (int i = 0; i < btn.length; i++) {
+            btn[i] = new Button();
+        }
+
+        for (int i = 0; i < espaciadores.length; i++) {
+            espaciadores[i] = new Pane();
+        }
+
+        for (int i = 0; i < impane.length; i++) {
+            impane[i] = new Pane();
+        }
+
+        for (int i = 0; i < vresumout.length; i++) {
+            vresumout[i] = new VBox(resumout[i][0], resumout[i][1], resumout[i][2], resumout[i][3], resumout[i][4], resumout[i][5], resumout[i][6], resumout[i][7], resumout[i][8], resumout[i][9], resumout[i][10], resumout[i][11], resumout[i][12], resumout[i][13], resumout[i][14], resumout[i][15]);
+        }
+
+        btn[0].setAlignment(Pos.CENTER);
+        btn[0].setText("X");
+        btn[0].setMinSize(30, 30);
+
+        espaciadores[0].setMinWidth(180);
+        espaciadores[1].setMinHeight(100);
         ciclos = new TextField();
         ciclos.setAlignment(Pos.CENTER);
         ciclos.setTextFormatter(textFormatter);
-        startsim = new Button("Iniciar simulacion");
+        ciclos.setMinWidth(200);
+        btn[1].setText("Iniciar Simulacion");
+        btn[1].setMaxWidth(200);
+        btn[1].setTextAlignment(TextAlignment.CENTER);
 
-        home = new VBox(ciclos, startsim);
-        root = new HBox(home);
-        root.setMinSize(620, 300);
-        root.setMaxSize(620, 300);
+        base[0] = new VBox(espaciadores[1], ciclos, btn[1]);
+        base[0].setMinWidth(200);
+        base[0].setSpacing(10);
+        root[0] = new HBox(btn[0], espaciadores[0], base[0]);
+        root[0].setMinSize(620, 300);
+        root[0].setMaxSize(620, 300);
 
+        espaciadores[3].setMinHeight(30);
+
+        base[1] = new VBox(espaciadores[2], prosout[0], prosout[1], prosout[2], prosout[3], prosout[4], prosout[5], prosout[6], espaciadores[3], prosout[7]);
+        base[1].setSpacing(10);
+        base[1].setMinSize(300, 300);
+        base[1].setMaxSize(300, 300);
+
+        impane[0].setMinSize(300, 300);
+        impane[0].setMaxSize(300, 300);
+
+        btn[2].setText("X");
+        btn[2].setTextAlignment(TextAlignment.CENTER);
+
+        impane[0].setStyle("-fx-background-color: #000000");
+
+        root[1] = new HBox(btn[2], base[1], impane[0]);
+        root[1].setStyle("-fx-background-color: #FFFFFF");
+        root[1].setSpacing(10);
+        root[1].setMinSize(620, 300);
+        root[1].setMaxSize(620, 300);
+
+    }
+
+    @Override
+    public void run() {
+        Application.launch();
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+
+        btn[0].setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Platform.exit();
+            }
+        });
+
+        btn[1].setOnAction(e -> startSim());
+
+        btn[2].setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Platform.exit();
+            }
+        });
+
+        scene = new Scene(root[0]);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        sta = stage;
+        sta.initStyle(StageStyle.TRANSPARENT);
+        sta.setScene(scene);
+        sta.show();
     }
 
     private void startSim() {
@@ -186,95 +212,94 @@ public class MainGUI extends Application implements Runnable {
 
                 switch (c[0]) {
                     case "EN":
-                        Platform.runLater(() -> sta.getScene().setRoot(root1));
-                        Platform.runLater(() -> caja.setText("Nuevo cliente agregado"));
-                        Platform.runLater(() -> estado.setText("Caja: " + c[1]));
-                        Platform.runLater(() -> transaccion.setText(""));
-                        Platform.runLater(() -> monto.setText(""));
-                        Platform.runLater(() -> entrega.setText(""));
-                        Platform.runLater(() -> monto_faltante.setText(""));
-                        Platform.runLater(() -> adicional.setText(""));
-                        Platform.runLater(() -> indicador_ciclos.setText("cilo: " + c[2]));
+                        Platform.runLater(() -> sta.getScene().setRoot(root[1]));
+                        Platform.runLater(() -> prosout[0].setText("Nuevo cliente agregado"));
+                        Platform.runLater(() -> prosout[1].setText("Caja: " + c[1]));
+                        Platform.runLater(() -> prosout[2].setText(""));
+                        Platform.runLater(() -> prosout[3].setText(""));
+                        Platform.runLater(() -> prosout[4].setText(""));
+                        Platform.runLater(() -> prosout[5].setText(""));
+                        Platform.runLater(() -> prosout[6].setText(""));
+                        Platform.runLater(() -> prosout[7].setText("Ciclo: " + c[2]));
                         break;
                     case "N":
-                        Platform.runLater(() -> caja.setText("Nuevo cliente agregado"));
-                        Platform.runLater(() -> estado.setText("Caja: " + c[1]));
-                        Platform.runLater(() -> transaccion.setText(""));
-                        Platform.runLater(() -> monto.setText(""));
-                        Platform.runLater(() -> entrega.setText(""));
-                        Platform.runLater(() -> monto_faltante.setText(""));
-                        Platform.runLater(() -> adicional.setText(""));
-                        Platform.runLater(() -> indicador_ciclos.setText("cilo: " + c[2]));
+                        Platform.runLater(() -> prosout[0].setText("Nuevo cliente agregado"));
+                        Platform.runLater(() -> prosout[1].setText("Caja: " + c[1]));
+                        Platform.runLater(() -> prosout[2].setText(""));
+                        Platform.runLater(() -> prosout[3].setText(""));
+                        Platform.runLater(() -> prosout[4].setText(""));
+                        Platform.runLater(() -> prosout[5].setText(""));
+                        Platform.runLater(() -> prosout[6].setText(""));
+                        Platform.runLater(() -> prosout[7].setText("Ciclo: " + c[2]));
                         break;
                     case "C":
-                        Platform.runLater(() -> caja.setText("Caja: " + c[1]));
+                        Platform.runLater(() -> prosout[0].setText("Caja: " + c[1]));
                         switch (c[2]) {
                             case "0":
-                                Platform.runLater(() -> estado.setText("Sin clientes"));
-                                Platform.runLater(() -> transaccion.setText(""));
-                                Platform.runLater(() -> monto.setText(""));
-                                Platform.runLater(() -> entrega.setText(""));
-                                Platform.runLater(() -> monto_faltante.setText(""));
-                                Platform.runLater(() -> adicional.setText(""));
+                                Platform.runLater(() -> prosout[1].setText("Sin clientes"));
+                                Platform.runLater(() -> prosout[2].setText(""));
+                                Platform.runLater(() -> prosout[3].setText(""));
+                                Platform.runLater(() -> prosout[4].setText(""));
+                                Platform.runLater(() -> prosout[5].setText(""));
+                                Platform.runLater(() -> prosout[6].setText(""));
                                 break;
                             case "1":
-                                Platform.runLater(() -> estado.setText("Atendiendo nuevo cleinte"));
+                                Platform.runLater(() -> prosout[1].setText("Atendiendo nuevo cleinte"));
                                 break;
                             case "2":
-                                Platform.runLater(() -> estado.setText("Atendiendo cliente en ventanilla"));
+                                Platform.runLater(() -> prosout[1].setText("Atendiendo cliente en ventanilla"));
                                 break;
                         }
                         switch (c[3]) {
                             case "0":
-                                Platform.runLater(() -> transaccion.setText("Deposito"));
-                                Platform.runLater(() -> monto.setText("Monto: " + c[4]));
-                                Platform.runLater(() -> entrega.setText("Entrega: " + c[5]));
-                                Platform.runLater(() -> monto_faltante.setText("Faltante: " + c[6]));
+                                Platform.runLater(() -> prosout[2].setText("Deposito"));
+                                Platform.runLater(() -> prosout[3].setText("Monto: " + c[4]));
+                                Platform.runLater(() -> prosout[4].setText("Entrega: " + c[5]));
+                                Platform.runLater(() -> prosout[5].setText("Faltante: " + c[6]));
                                 switch (c[7]) {
                                     case "0":
-                                        Platform.runLater(() -> adicional.setText(""));
+                                        Platform.runLater(() -> prosout[6].setText(""));
                                         break;
                                     case "1":
-                                        Platform.runLater(() -> adicional.setText("Cliente atendido"));
+                                        Platform.runLater(() -> prosout[6].setText("Cliente atendido"));
                                         break;
-
                                 }
                                 break;
                             case "1":
-                                Platform.runLater(() -> transaccion.setText("Retiro"));
+                                Platform.runLater(() -> prosout[2].setText("Retiro"));
                                 switch (c[4]) {
                                     case "-1":
-                                        Platform.runLater(() -> monto.setText(""));
-                                        Platform.runLater(() -> entrega.setText(""));
-                                        Platform.runLater(() -> monto_faltante.setText(""));
+                                        Platform.runLater(() -> prosout[3].setText(""));
+                                        Platform.runLater(() -> prosout[4].setText(""));
+                                        Platform.runLater(() -> prosout[5].setText(""));
                                         break;
                                     default:
-                                        Platform.runLater(() -> monto.setText("Monto: " + c[4]));
-                                        Platform.runLater(() -> entrega.setText("Entrega: " + c[5]));
-                                        Platform.runLater(() -> monto_faltante.setText("Faltante: " + c[6]));
+                                        Platform.runLater(() -> prosout[3].setText("Monto: " + c[4]));
+                                        Platform.runLater(() -> prosout[4].setText("Entrega: " + c[5]));
+                                        Platform.runLater(() -> prosout[5].setText("Faltante: " + c[6]));
                                 }
                                 switch (c[7]) {
                                     case "0":
-                                        Platform.runLater(() -> adicional.setText("Realizando cambio denominacion"));
+                                        Platform.runLater(() -> prosout[6].setText("Realizando cambio denominacion"));
                                         break;
                                     case "1":
-                                        Platform.runLater(() -> adicional.setText("Reabasteciendo caja"));
+                                        Platform.runLater(() -> prosout[6].setText("Reabasteciendo caja"));
                                         break;
                                     case "2":
-                                        Platform.runLater(() -> adicional.setText("Cliente atendido"));
+                                        Platform.runLater(() -> prosout[6].setText("Cliente atendido"));
                                         break;
                                     case "3":
-                                        Platform.runLater(() -> adicional.setText("Caja sin fondos"));
+                                        Platform.runLater(() -> prosout[6].setText("Caja sin fondos"));
                                         break;
                                     case "4":
-                                        Platform.runLater(() -> adicional.setText("Caja sin cambio"));
+                                        Platform.runLater(() -> prosout[6].setText("Caja sin cambio"));
                                         break;
                                 }
                                 break;
                         }
                         break;
-                    case "":
-                        //Platform.runLater(() -> );
+                    case "R":
+
                         break;
                 }
             } catch (IOException ex) {

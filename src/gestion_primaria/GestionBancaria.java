@@ -116,7 +116,7 @@ public class GestionBancaria implements Runnable {
     }
 
     private void estadisticas() {
-        comunicacion = "C|";
+        comunicacion = "R|";
         Caja caja_en_gestion = null;
         System.out.println("Ciclos concluidos\n\n\n");
         for (int i = 0; i < 6; i++) {
@@ -129,10 +129,7 @@ public class GestionBancaria implements Runnable {
         comunicacion = comunicacion + "T";
         try {
             dout.writeUTF(comunicacion);
-            dout.flush();
-            dout.close();
-            din.close();
-            
+            dout.flush();            
         } catch (IOException ex) {
             Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }
