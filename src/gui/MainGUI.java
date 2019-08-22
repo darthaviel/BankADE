@@ -202,7 +202,9 @@ public class MainGUI extends Application implements Runnable {
         btn[3].setOnAction(e -> {
             Platform.runLater(() -> sta1.hide());
             Platform.runLater(() -> scene2 = new Scene(root[2]));
-            Platform.runLater(() -> sta.setScene(scene2));
+            Platform.runLater(()->sta2 = new Stage());
+            Platform.runLater(() -> sta2.setScene(scene2));
+            Platform.runLater(() -> sta2.show());
         });
         
         btn[4].setOnAction(new EventHandler<ActionEvent>() {
