@@ -27,11 +27,12 @@ import javafx.stage.StageStyle;
 
 public class MainGUI extends Application implements Runnable {
 
-    private Label[] prosout = new Label[8];
+    private Label[] prosout = new Label[10];
     private Label[][] resumout = new Label[7][16];
 
     private VBox[] vresumout = new VBox[7];
     private VBox[] base = new VBox[2];
+    private VBox[] subroot = new VBox[2];
 
     private Pane[] espaciadores = new Pane[4];
     private Pane[] impane = new Pane[3];
@@ -48,7 +49,12 @@ public class MainGUI extends Application implements Runnable {
     private DataInputStream din;
 
     private Scene scene;
+    private Scene scene1;
+    private Scene scene2;
+
     private Stage sta;
+    private Stage sta1;
+    private Stage sta2;
 
     @Override
     public void init() {
@@ -167,6 +173,11 @@ public class MainGUI extends Application implements Runnable {
             public void handle(ActionEvent t) {
                 Platform.exit();
             }
+        });
+        
+        btn[3].setOnAction(e -> {
+             Platform.runLater(() -> sta1.hide());
+              Platform.runLater(() ->sta.getScene().setRoot(root[2])); 
         });
 
         scene = new Scene(root[0]);
@@ -299,7 +310,14 @@ public class MainGUI extends Application implements Runnable {
                         }
                         break;
                     case "R":
-
+                        Platform.runLater(() -> prosout[8].setText("Simulacion Terminada"));
+                        Platform.runLater(() -> btn[3].setText("Ver Estadisticas"));
+                        Platform.runLater(() -> subroot[0] = new VBox(prosout[8], btn[3]));
+                        Platform.runLater(() -> scene1 = new Scene(subroot[0]));
+                        Platform.runLater(() -> sta1 = new Stage());
+                        Platform.runLater(() -> sta1.initStyle(StageStyle.TRANSPARENT));
+                        Platform.runLater(() -> sta1.setScene(scene1));
+                        Platform.runLater(() -> sta1.show());
                         break;
                 }
             } catch (IOException ex) {
