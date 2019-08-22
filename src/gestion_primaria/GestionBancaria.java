@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import tda.lista.LISTA;
+import alt_tda.lista.LISTA;
 
 public class GestionBancaria implements Runnable {
 
