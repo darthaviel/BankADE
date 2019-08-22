@@ -26,36 +26,36 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class MainGUI extends Application implements Runnable {
-    
+
     private Label[] prosout = new Label[10];
     private Label[][] resumout = new Label[7][16];
-    
+
     private VBox[] vresumout = new VBox[7];
     private VBox[] base = new VBox[2];
     private VBox[] subroot = new VBox[2];
-    
+
     private Pane[] espaciadores = new Pane[5];
     private Pane[] impane = new Pane[3];
-    
+
     private TextField ciclos;
-    
+
     private HBox[] root = new HBox[3];
-    
+
     private Button[] btn = new Button[7];
-    
+
     private Socket socket;
-    
+
     private DataOutputStream dout;
     private DataInputStream din;
-    
+
     private Scene scene;
     private Scene scene1;
     private Scene scene2;
-    
+
     private Stage sta;
     private Stage sta1;
     private Stage sta2;
-    
+
     @Override
     public void init() {
         try {
@@ -68,65 +68,65 @@ public class MainGUI extends Application implements Runnable {
         } catch (InterruptedException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String text = change.getText();
-            
+
             if (text.matches("[0-9]*")) {
                 return change;
             }
-            
+
             return null;
         };
-        
+
         TextFormatter<String> textFormatter = new TextFormatter<>(filter);
-        
+
         for (int i = 0; i < prosout.length; i++) {
             prosout[i] = new Label();
         }
-        
+
         for (int i = 0; i < resumout.length; i++) {
             for (int j = 0; j < resumout[i].length; j++) {
                 resumout[i][j] = new Label();
             }
         }
-        
+
         for (int i = 0; i < btn.length; i++) {
             btn[i] = new Button();
         }
-        
+
         for (int i = 0; i < espaciadores.length; i++) {
             espaciadores[i] = new Pane();
         }
-        
+
         for (int i = 0; i < impane.length; i++) {
             impane[i] = new Pane();
         }
-        
+
         for (int i = 0; i < vresumout.length; i++) {
             vresumout[i] = new VBox(resumout[i][0], resumout[i][1], resumout[i][2], resumout[i][3], resumout[i][4], resumout[i][5], resumout[i][6], resumout[i][7], resumout[i][8], resumout[i][9], resumout[i][10], resumout[i][11], resumout[i][12], resumout[i][13], resumout[i][14], resumout[i][15]);
         }
-        
+
         for (int i = 1; i < resumout.length; i++) {
             resumout[i][0].setAlignment(Pos.CENTER);
             resumout[i][0].setText("Caja " + (i));
             resumout[i][0].setMinWidth(100);
         }
-        
+
         for (int i = 1; i < resumout[0].length; i++) {
             resumout[0][i].setAlignment(Pos.CENTER_LEFT);
         }
-        
+
         for (int i = 1; i < resumout.length; i++) {
             for (int j = 1; j < resumout[i].length; j++) {
-                resumout[i][j].setAlignment(Pos.CENTER_LEFT);
+                resumout[i][j].setAlignment(Pos.CENTER_RIGHT);
             }
         }
-        
+
         btn[0].setAlignment(Pos.CENTER);
         btn[0].setText("X");
         btn[0].setMinSize(30, 30);
-        
+
         espaciadores[0].setMinWidth(180);
         espaciadores[1].setMinHeight(100);
         ciclos = new TextField();
@@ -135,7 +135,7 @@ public class MainGUI extends Application implements Runnable {
         ciclos.setMinWidth(200);
         btn[1].setText("Iniciar Simulacion");
         btn[1].setTextAlignment(TextAlignment.CENTER);
-        
+
         base[0] = new VBox(ciclos, btn[1]);
         base[0].setMinWidth(200);
         base[0].setSpacing(10);
@@ -143,77 +143,95 @@ public class MainGUI extends Application implements Runnable {
         root[0] = new HBox(btn[0], espaciadores[0], base[0]);
         root[0].setMinSize(620, 300);
         root[0].setMaxSize(620, 300);
-        
+
         espaciadores[3].setMinHeight(30);
-        
+
         base[1] = new VBox(espaciadores[2], prosout[0], prosout[1], prosout[2], prosout[3], prosout[4], prosout[5], prosout[6], espaciadores[3], prosout[7]);
         base[1].setSpacing(10);
         base[1].setMinSize(300, 300);
         base[1].setMaxSize(300, 300);
-        
+
         impane[0].setMinSize(300, 300);
         impane[0].setMaxSize(300, 300);
-        
+
         btn[2].setText("X");
         btn[2].setMaxWidth(200);
         btn[2].setTextAlignment(TextAlignment.CENTER);
-        
+
         impane[0].setStyle("-fx-background-color: #000000");
-        
+
         root[1] = new HBox(btn[2], base[1], impane[0]);
         root[1].setStyle("-fx-background-color: #FFFFFF");
         root[1].setSpacing(10);
         root[1].setMinSize(620, 300);
         root[1].setMaxSize(620, 300);
-        
+
         btn[4].setText("X");
         btn[4].setMinWidth(30);
         btn[4].setTextAlignment(TextAlignment.CENTER);
-        
+
+        resumout[0][1].setText("Clientes atendidos");
+        resumout[0][2].setText("Clientes en espera");
+        resumout[0][3].setText("Efectivo en caja");
+        resumout[0][4].setText("Total monto retiros");
+        resumout[0][5].setText("Total monto depositos");
+        resumout[0][6].setText("Billetes 1");
+        resumout[0][7].setText("Billetes 2");
+        resumout[0][8].setText("Billetes 5");
+        resumout[0][9].setText("Billetes 10");
+        resumout[0][10].setText("Billetes 20");
+        resumout[0][11].setText("Billetes 50");
+        resumout[0][12].setText("Billetes 100");
+        resumout[0][13].setText("Billetes 500");
+        resumout[0][14].setText("");
+        resumout[0][15].setText("L");
+
         root[2] = new HBox(btn[4], vresumout[0], vresumout[1], vresumout[2], vresumout[3], vresumout[4], vresumout[5], vresumout[6]);
         root[2].setSpacing(10);
-        
+
     }
-    
+
     @Override
     public void run() {
         Application.launch();
     }
-    
+
     @Override
     public void start(Stage stage) throws Exception {
-        
+
         btn[0].setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
             }
         });
-        
+
         btn[1].setOnAction(e -> startSim());
-        
+
         btn[2].setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
             }
         });
-        
+
         btn[3].setOnAction(e -> {
             Platform.runLater(() -> sta1.hide());
             Platform.runLater(() -> scene2 = new Scene(root[2]));
-            Platform.runLater(()->sta2 = new Stage());
+            Platform.runLater(() -> sta2 = new Stage());
             Platform.runLater(() -> sta2.setScene(scene2));
+            Platform.runLater(() -> sta2.initStyle(StageStyle.TRANSPARENT));
             Platform.runLater(() -> sta2.show());
+            Platform.runLater(() -> sta.hide());
         });
-        
+
         btn[4].setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
             }
         });
-        
+
         scene = new Scene(root[0]);
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         sta = stage;
@@ -221,7 +239,7 @@ public class MainGUI extends Application implements Runnable {
         sta.setScene(scene);
         sta.show();
     }
-    
+
     private void startSim() {
         String s;
         s = ciclos.getText();
@@ -240,10 +258,10 @@ public class MainGUI extends Application implements Runnable {
             }
         }
     }
-    
+
     private void runSim(DataInputStream in, DataOutputStream out) {
         while (true) {
-            
+
             try {
                 String z = in.readUTF();
                 out.writeUTF("k");
@@ -254,7 +272,7 @@ public class MainGUI extends Application implements Runnable {
                 for (int i = 0; i < 8; i++) {
                     c[i] = s.nextToken();
                 }
-                
+
                 switch (c[0]) {
                     case "EN":
                         Platform.runLater(() -> sta.getScene().setRoot(root[1]));
@@ -358,13 +376,29 @@ public class MainGUI extends Application implements Runnable {
                         Platform.runLater(() -> sta1.initStyle(StageStyle.TRANSPARENT));
                         Platform.runLater(() -> sta1.setScene(scene1));
                         Platform.runLater(() -> sta1.show());
+                        for (int i = 1; i < (c.length - 1); i++) {
+                            StringTokenizer ss = new StringTokenizer(c[i], "#");
+                            resumout[i][1].setText(ss.nextToken());
+                            resumout[i][2].setText(ss.nextToken());
+                            resumout[i][3].setText(ss.nextToken());
+                            resumout[i][4].setText(ss.nextToken());
+                            resumout[i][5].setText(ss.nextToken());
+                            resumout[i][6].setText(ss.nextToken());
+                            resumout[i][7].setText(ss.nextToken());
+                            resumout[i][8].setText(ss.nextToken());
+                            resumout[i][9].setText(ss.nextToken());
+                            resumout[i][10].setText(ss.nextToken());
+                            resumout[i][11].setText(ss.nextToken());
+                            resumout[i][12].setText(ss.nextToken());
+                            resumout[i][13].setText(ss.nextToken());
+                        }
                         break;
                 }
             } catch (IOException ex) {
                 Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
     }
-    
+
 }
