@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.StringTokenizer;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -12,15 +14,26 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -35,7 +48,6 @@ public class MainGUI extends Application implements Runnable {
     private VBox[] subroot = new VBox[2];
 
     private Pane[] espaciadores = new Pane[5];
-    private Pane[] impane = new Pane[3];
 
     private TextField ciclos;
 
@@ -55,6 +67,14 @@ public class MainGUI extends Application implements Runnable {
     private Stage sta;
     private Stage sta1;
     private Stage sta2;
+
+    private Image x,
+            start_background;
+
+    private Image[][] cajero_img = new Image[6][2];
+
+    private ImageView xbtn,
+            cajero_img_view;
 
     @Override
     public void init() {
@@ -81,13 +101,33 @@ public class MainGUI extends Application implements Runnable {
 
         TextFormatter<String> textFormatter = new TextFormatter<>(filter);
 
+        Path currentRelativePath = Paths.get("");
+        String img_url = "file://" + currentRelativePath.toAbsolutePath().toString() + System.getProperty("file.separator") + "img" + System.getProperty("file.separator");
+        img_url = img_url.replace("\\", "/");
+        x = new Image(img_url + "exit.png");
+        start_background = new Image(img_url + "start_background.png", 620, 300, false, false);
+        xbtn = new ImageView(x);
+        xbtn.setFitWidth(15);
+        xbtn.setFitHeight(15);
+
+        for (int i = 0; i < 6; i++) {
+            cajero_img[i][0] = new Image(img_url + (i + 1) + "_cajeros.png");
+            cajero_img[i][1] = new Image(img_url + (i + 1) + "_cajeroc.png");
+        }
+
+        cajero_img_view = new ImageView();
+        cajero_img_view.setFitWidth(300);
+        cajero_img_view.setFitHeight(300);
+
         for (int i = 0; i < prosout.length; i++) {
             prosout[i] = new Label();
+            prosout[i].setTextFill(Color.WHITE);
         }
 
         for (int i = 0; i < resumout.length; i++) {
             for (int j = 0; j < resumout[i].length; j++) {
                 resumout[i][j] = new Label();
+                resumout[i][j].setTextFill(Color.WHITE);
             }
         }
 
@@ -97,10 +137,6 @@ public class MainGUI extends Application implements Runnable {
 
         for (int i = 0; i < espaciadores.length; i++) {
             espaciadores[i] = new Pane();
-        }
-
-        for (int i = 0; i < impane.length; i++) {
-            impane[i] = new Pane();
         }
 
         for (int i = 0; i < vresumout.length; i++) {
@@ -123,9 +159,9 @@ public class MainGUI extends Application implements Runnable {
             }
         }
 
-        btn[0].setAlignment(Pos.CENTER);
-        btn[0].setText("X");
-        btn[0].setMinSize(30, 30);
+        btn[0] = new Button("", xbtn);
+        btn[0].setStyle("-fx-background-color: transparent");
+        btn[0].setMaxSize(10, 10);
 
         espaciadores[0].setMinWidth(180);
         espaciadores[1].setMinHeight(100);
@@ -133,7 +169,11 @@ public class MainGUI extends Application implements Runnable {
         ciclos.setAlignment(Pos.CENTER);
         ciclos.setTextFormatter(textFormatter);
         ciclos.setMinWidth(200);
+        ciclos.setStyle("-fx-text-inner-color: #FFFFFF; -fx-background-color: #FFFFFF10");
+
         btn[1].setText("Iniciar Simulacion");
+        btn[1].setTextFill(Color.WHITE);
+        btn[1].setBackground(new Background(new BackgroundFill(Color.web("#FFFFFF10"), CornerRadii.EMPTY, Insets.EMPTY)));
         btn[1].setTextAlignment(TextAlignment.CENTER);
 
         base[0] = new VBox(ciclos, btn[1]);
@@ -143,6 +183,8 @@ public class MainGUI extends Application implements Runnable {
         root[0] = new HBox(btn[0], espaciadores[0], base[0]);
         root[0].setMinSize(620, 300);
         root[0].setMaxSize(620, 300);
+        //root[0].setBackground(new Background(new BackgroundFill(Color.rgb(71, 75, 89), CornerRadii.EMPTY, Insets.EMPTY)));
+        root[0].setBackground(new Background(new BackgroundImage(start_background, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(620, 300, true, true, true, false))));
 
         espaciadores[3].setMinHeight(30);
 
@@ -151,24 +193,17 @@ public class MainGUI extends Application implements Runnable {
         base[1].setMinSize(300, 300);
         base[1].setMaxSize(300, 300);
 
-        impane[0].setMinSize(300, 300);
-        impane[0].setMaxSize(300, 300);
+        btn[2] = new Button("", xbtn);
+        btn[2].setStyle("-fx-background-color: transparent");
 
-        btn[2].setText("X");
-        btn[2].setMaxWidth(200);
-        btn[2].setTextAlignment(TextAlignment.CENTER);
-
-        impane[0].setStyle("-fx-background-color: #000000");
-
-        root[1] = new HBox(btn[2], base[1], impane[0]);
-        root[1].setStyle("-fx-background-color: #FFFFFF");
+        root[1] = new HBox(btn[2], base[1], cajero_img_view);
+        root[1].setStyle("-fx-background-color: #474b59");
         root[1].setSpacing(10);
         root[1].setMinSize(620, 300);
         root[1].setMaxSize(620, 300);
 
-        btn[4].setText("X");
-        btn[4].setMinWidth(30);
-        btn[4].setTextAlignment(TextAlignment.CENTER);
+        btn[4] = new Button("", xbtn);
+        btn[4].setStyle("-fx-background-color: transparent");
 
         resumout[0][1].setText("Clientes atendidos");
         resumout[0][2].setText("Clientes en espera");
@@ -188,6 +223,7 @@ public class MainGUI extends Application implements Runnable {
 
         root[2] = new HBox(btn[4], vresumout[0], vresumout[1], vresumout[2], vresumout[3], vresumout[4], vresumout[5], vresumout[6]);
         root[2].setSpacing(10);
+        root[2].setBackground(new Background(new BackgroundFill(Color.rgb(71, 75, 89), CornerRadii.EMPTY, Insets.EMPTY)));
 
     }
 
@@ -300,6 +336,7 @@ public class MainGUI extends Application implements Runnable {
                         switch (c[2]) {
                             case "0":
                                 Platform.runLater(() -> prosout[1].setText("Sin clientes"));
+                                Platform.runLater(() -> cajero_img_view.setImage(cajero_img[(Integer.parseInt(c[1]) - 1)][0]));
                                 Platform.runLater(() -> prosout[2].setText(""));
                                 Platform.runLater(() -> prosout[3].setText(""));
                                 Platform.runLater(() -> prosout[4].setText(""));
@@ -308,9 +345,11 @@ public class MainGUI extends Application implements Runnable {
                                 break;
                             case "1":
                                 Platform.runLater(() -> prosout[1].setText("Atendiendo nuevo cleinte"));
+                                Platform.runLater(() -> cajero_img_view.setImage(cajero_img[(Integer.parseInt(c[1]) - 1)][1]));
                                 break;
                             case "2":
                                 Platform.runLater(() -> prosout[1].setText("Atendiendo cliente en ventanilla"));
+                                Platform.runLater(() -> cajero_img_view.setImage(cajero_img[(Integer.parseInt(c[1])-1)][1]));
                                 break;
                         }
                         switch (c[3]) {
@@ -368,9 +407,12 @@ public class MainGUI extends Application implements Runnable {
                         Platform.runLater(() -> prosout[8].setMinHeight(50));
                         Platform.runLater(() -> btn[3].setText("Ver Estadisticas"));
                         Platform.runLater(() -> btn[3].setAlignment(Pos.CENTER));
+                        Platform.runLater(() -> btn[3].setTextFill(Color.WHITE));
+                        Platform.runLater(() -> btn[3].setBackground(new Background(new BackgroundFill(Color.web("#FFFFFF40"), CornerRadii.EMPTY, Insets.EMPTY))));
                         Platform.runLater(() -> subroot[0] = new VBox(prosout[8], btn[3]));
                         Platform.runLater(() -> subroot[0].setMinHeight(100));
                         Platform.runLater(() -> subroot[0].setAlignment(Pos.CENTER));
+                        Platform.runLater(() -> subroot[0].setBackground(new Background(new BackgroundFill(Color.web("#636775"), CornerRadii.EMPTY, Insets.EMPTY))));
                         Platform.runLater(() -> scene1 = new Scene(subroot[0]));
                         Platform.runLater(() -> sta1 = new Stage());
                         Platform.runLater(() -> sta1.initStyle(StageStyle.TRANSPARENT));
