@@ -32,7 +32,8 @@ public class Caja {
             detalle_1;
 
     private long monto_retiros,
-            monto_depositos = -100000;
+            monto_depositos = -100000,
+            refinanciamientos = 0;
 
     private boolean cambio_denominacion = false;
 
@@ -305,7 +306,7 @@ public class Caja {
         System.out.println("Cantidad billetes 50:   " + detalle_50);
         System.out.println("Cantidad billetes 100:  " + detalle_100);
         System.out.println("Cantidad billetes 500:  " + detalle_500 + "\n\n");
-        estadistica = clientes_atendidos+"#"+clientes_en_espera+"#"+efectivoCaja()+"#"+monto_retiros+"#"+monto_depositos+"#"+detalle_1+"#"+detalle_2+"#"+detalle_5+"#"+detalle_10+"#"+detalle_20+"#"+detalle_50+"#"+detalle_100+"#"+detalle_500;
+        estadistica = clientes_atendidos+"#"+clientes_en_espera+"#"+efectivoCaja()+"#"+monto_retiros+"#"+monto_depositos+"#"+refinanciamientos+"#"+detalle_1+"#"+detalle_2+"#"+detalle_5+"#"+detalle_10+"#"+detalle_20+"#"+detalle_50+"#"+detalle_100+"#"+detalle_500;
     }
 
     private void contarClientesEsper() {
@@ -371,6 +372,7 @@ public class Caja {
     private void pedirBoveda() {
         monto_depositos -= 100000;
         distribuir_billetes(100000, false);
+        refinanciamientos += 100000;
     }
 
     public String resumenGestion() {

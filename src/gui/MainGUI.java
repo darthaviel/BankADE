@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -19,6 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
@@ -75,6 +78,10 @@ public class MainGUI extends Application implements Runnable {
 
     private ImageView xbtn,
             cajero_img_view;
+
+    private ProgressBar pb;
+
+    private DoubleProperty db;
 
     @Override
     public void init() {
@@ -183,12 +190,18 @@ public class MainGUI extends Application implements Runnable {
         root[0] = new HBox(btn[0], espaciadores[0], base[0]);
         root[0].setMinSize(620, 300);
         root[0].setMaxSize(620, 300);
-        //root[0].setBackground(new Background(new BackgroundFill(Color.rgb(71, 75, 89), CornerRadii.EMPTY, Insets.EMPTY)));
         root[0].setBackground(new Background(new BackgroundImage(start_background, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(620, 300, true, true, true, false))));
 
         espaciadores[3].setMinHeight(30);
 
-        base[1] = new VBox(espaciadores[2], prosout[0], prosout[1], prosout[2], prosout[3], prosout[4], prosout[5], prosout[6], espaciadores[3], prosout[7]);
+        db = new SimpleDoubleProperty(.0);
+        pb = new ProgressBar();
+        pb.progressProperty().bind(db);
+        pb.setMaxWidth(300);
+        pb.setMinWidth(300);
+        pb.setStyle("-fx-control-inner-background: #474b59; -fx-accent: #FFFFFF40");
+
+        base[1] = new VBox(espaciadores[2], prosout[0], prosout[1], prosout[2], prosout[3], prosout[4], prosout[5], prosout[6], espaciadores[3], prosout[7], pb);
         base[1].setSpacing(10);
         base[1].setMinSize(300, 300);
         base[1].setMaxSize(300, 300);
@@ -210,15 +223,15 @@ public class MainGUI extends Application implements Runnable {
         resumout[0][3].setText("Efectivo en caja");
         resumout[0][4].setText("Total monto retiros");
         resumout[0][5].setText("Total monto depositos");
-        resumout[0][6].setText("Billetes 1");
-        resumout[0][7].setText("Billetes 2");
-        resumout[0][8].setText("Billetes 5");
-        resumout[0][9].setText("Billetes 10");
-        resumout[0][10].setText("Billetes 20");
-        resumout[0][11].setText("Billetes 50");
-        resumout[0][12].setText("Billetes 100");
-        resumout[0][13].setText("Billetes 500");
-        resumout[0][14].setText("");
+        resumout[0][6].setText("Refinanciamiento");
+        resumout[0][7].setText("Billetes 1");
+        resumout[0][8].setText("Billetes 2");
+        resumout[0][9].setText("Billetes 5");
+        resumout[0][10].setText("Billetes 10");
+        resumout[0][11].setText("Billetes 20");
+        resumout[0][12].setText("Billetes 50");
+        resumout[0][13].setText("Billetes 100");
+        resumout[0][14].setText("Billetes 500");
         resumout[0][15].setText("L");
 
         root[2] = new HBox(btn[4], vresumout[0], vresumout[1], vresumout[2], vresumout[3], vresumout[4], vresumout[5], vresumout[6]);
@@ -297,10 +310,15 @@ public class MainGUI extends Application implements Runnable {
         if (s.trim().length() > 0) {
             try {
                 if (Integer.parseInt(s) > 0) {
+                    double m = Integer.parseInt(s);
+                    System.out.println(m);
+                    m = 1 / (6 * m);
+                    final double n = m;
+                    System.out.println(n);
                     try {
                         dout.writeUTF(s);
                         dout.flush();
-                        Runnable sim = () -> runSim(din, dout);
+                        Runnable sim = () -> runSim(din, dout, n);
                         Thread bgthread = new Thread(sim);
                         bgthread.setDaemon(true);
                         bgthread.start();
@@ -314,7 +332,8 @@ public class MainGUI extends Application implements Runnable {
         }
     }
 
-    private void runSim(DataInputStream in, DataOutputStream out) {
+    private void runSim(DataInputStream in, DataOutputStream out, double razons) {
+        double control = 0;
         while (true) {
 
             try {
@@ -355,6 +374,11 @@ public class MainGUI extends Application implements Runnable {
                     case "C":
                         out.writeUTF("k");
                         out.flush();
+
+                        control += razons;
+                        System.out.println(control);
+                        final double ban = control;
+                        Platform.runLater(() -> db.set(ban));
                         Platform.runLater(() -> prosout[0].setText("Caja: " + c[1]));
                         switch (c[2]) {
                             case "0":
@@ -456,6 +480,7 @@ public class MainGUI extends Application implements Runnable {
                             resumout[i][11].setText(ss.nextToken());
                             resumout[i][12].setText(ss.nextToken());
                             resumout[i][13].setText(ss.nextToken());
+                            resumout[i][14].setText(ss.nextToken());
                         }
                         break;
                 }
