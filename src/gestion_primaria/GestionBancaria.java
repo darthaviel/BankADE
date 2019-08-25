@@ -11,7 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import alt_tda.lista.LISTA;
 
 public class GestionBancaria implements Runnable {
@@ -26,20 +25,17 @@ public class GestionBancaria implements Runnable {
     DataOutputStream dout;
     DataInputStream din;
 
-    int PORT = 1025;
+    int PORT = 2250;
 
     String comunicacion;
-    //Nuevo cliente
-    // EN|... variante para cambio de root node
-    // N|#caja|#ciclo
-    //Caja atendiendo
-    // C|#caja|#estado|#transaccion|#monto|#entrega|#faltante|#adicionales
 
     @Override
     public void run() {
         init();
-        ciclo();
-        estadisticas();
+        while (true) {
+            ciclo();
+            estadisticas();
+        }
     }
 
     private void init() {
@@ -73,7 +69,7 @@ public class GestionBancaria implements Runnable {
             caja_en_gestion = (Caja) cajas.RECUPERA(numero_caja);
             caja_en_gestion.agregarCliente(new Cliente(numero_caja, (int) (Math.random() * 2), ((int) (Math.random() * 10000)) + 1));
             System.out.println("\nNUEVO CLIENTE AGREGADO A LA CAJA " + numero_caja + "\n");
-            comunicacion = comunicacion + "N|" + numero_caja + "|" + (j + 1)+"|0|0|0|0|0";
+            comunicacion = comunicacion + "N|" + numero_caja + "|" + (j + 1) + "|0|0|0|0|0";
             try {
                 dout.writeUTF(comunicacion);
                 dout.flush();
@@ -123,13 +119,13 @@ public class GestionBancaria implements Runnable {
             caja_en_gestion = (Caja) cajas.RECUPERA(i + 1);
             cajas.SUPRIME(i + 1);
             caja_en_gestion.mostrarEstadistica();
-            comunicacion = comunicacion+ caja_en_gestion.estadisticaCaja()+"|";
+            comunicacion = comunicacion + caja_en_gestion.estadisticaCaja() + "|";
             cajas.INSERTA(caja_en_gestion, i + 1);
         }
         comunicacion = comunicacion + "T";
         try {
             dout.writeUTF(comunicacion);
-            dout.flush();            
+            dout.flush();
         } catch (IOException ex) {
             Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
         }

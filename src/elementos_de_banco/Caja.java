@@ -11,7 +11,7 @@ public class Caja {
     private PILA b20 = new PILA();
     private PILA b10 = new PILA();
     private PILA b5 = new PILA();
-    private PILA b2 = new PILA();
+    private PILA b2 = new PILA(); 
     private PILA b1 = new PILA();
     private String resumen,
             adicionales,

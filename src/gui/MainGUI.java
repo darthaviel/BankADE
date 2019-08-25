@@ -80,7 +80,7 @@ public class MainGUI extends Application implements Runnable {
     public void init() {
         try {
             Thread.sleep(1000);
-            socket = new Socket("localhost", 1025);
+            socket = new Socket("localhost", 2250);
             din = new DataInputStream(socket.getInputStream());
             dout = new DataOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
@@ -102,7 +102,7 @@ public class MainGUI extends Application implements Runnable {
         TextFormatter<String> textFormatter = new TextFormatter<>(filter);
 
         Path currentRelativePath = Paths.get("");
-        String img_url = "file://" + currentRelativePath.toAbsolutePath().toString() + System.getProperty("file.separator") + "img" + System.getProperty("file.separator");
+        String img_url = "file:///" + currentRelativePath.toAbsolutePath().toString() + System.getProperty("file.separator") + "img" + System.getProperty("file.separator");
         img_url = img_url.replace("\\", "/");
         x = new Image(img_url + "exit.png");
         start_background = new Image(img_url + "start_background.png", 620, 300, false, false);
