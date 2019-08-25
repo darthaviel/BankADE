@@ -369,6 +369,7 @@ public class Caja {
     }
 
     private void pedirBoveda() {
+        monto_depositos -= 100000;
         distribuir_billetes(100000, false);
     }
 
