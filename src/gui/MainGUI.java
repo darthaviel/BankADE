@@ -280,6 +280,7 @@ public class MainGUI extends Application implements Runnable {
         String s;
         s = ciclos.getText();
         if (s.trim().length() > 0) {
+            try{
             if (Integer.parseInt(s) > 0) {
                 try {
                     dout.writeUTF(s);
@@ -291,6 +292,8 @@ public class MainGUI extends Application implements Runnable {
                 } catch (IOException ex) {
                     Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }}catch (Exception e){
+                ciclos.setText("");
             }
         }
     }

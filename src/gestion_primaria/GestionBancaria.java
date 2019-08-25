@@ -60,7 +60,7 @@ public class GestionBancaria implements Runnable {
             numero_ciclos = Integer.parseInt(s);
             comunicacion = "E";
         } catch (IOException ex) {
-            Logger.getLogger(GestionBancaria.class.getName()).log(Level.SEVERE, null, ex);
+
         }
         int numero_caja;
         Caja caja_en_gestion;

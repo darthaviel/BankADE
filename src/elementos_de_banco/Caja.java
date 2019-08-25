@@ -269,9 +269,9 @@ public class Caja {
                         System.out.println("Fondos en caja: " + (efectivoCaja()));
                         resumen = resumen + (ini - cliente_en_ventanilla.getMonto_de_transaccion()) + "|" + cliente_en_ventanilla.getMonto_de_transaccion() + "|"+adicionales;
                     } else {
-                        int i = cliente_en_ventanilla.getMonto_de_transaccion();
                         entregar_billetes(cliente_en_ventanilla.getMonto_de_transaccion());
-                        resumen = resumen + i + "|" + (i -cliente_en_ventanilla.getMonto_de_transaccion()) + "|"+cliente_en_ventanilla.getMonto_de_transaccion()+"|";
+                        int i = cliente_en_ventanilla.getMonto_de_transaccion();
+                        resumen = resumen + (ini-i) + "|" + i + "|";
                         if (cliente_en_ventanilla.getMonto_de_transaccion() == 0) {
                             resumen = resumen + "2";
                             cliente_en_ventanilla = null;
