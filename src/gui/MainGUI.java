@@ -239,6 +239,11 @@ public class MainGUI extends Application implements Runnable {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
+                try {
+                    dout.writeUTF("x");
+                    dout.flush();
+                } catch (Exception e) {
+                }
             }
         });
 
@@ -248,6 +253,11 @@ public class MainGUI extends Application implements Runnable {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
+                try {
+                    dout.writeUTF("x");
+                    dout.flush();
+                } catch (Exception e) {
+                }
             }
         });
 
@@ -265,6 +275,11 @@ public class MainGUI extends Application implements Runnable {
             @Override
             public void handle(ActionEvent t) {
                 Platform.exit();
+                try {
+                    dout.writeUTF("x");
+                    dout.flush();
+                } catch (Exception e) {
+                }
             }
         });
 
@@ -280,19 +295,20 @@ public class MainGUI extends Application implements Runnable {
         String s;
         s = ciclos.getText();
         if (s.trim().length() > 0) {
-            try{
-            if (Integer.parseInt(s) > 0) {
-                try {
-                    dout.writeUTF(s);
-                    dout.flush();
-                    Runnable sim = () -> runSim(din, dout);
-                    Thread bgthread = new Thread(sim);
-                    bgthread.setDaemon(true);
-                    bgthread.start();
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                if (Integer.parseInt(s) > 0) {
+                    try {
+                        dout.writeUTF(s);
+                        dout.flush();
+                        Runnable sim = () -> runSim(din, dout);
+                        Thread bgthread = new Thread(sim);
+                        bgthread.setDaemon(true);
+                        bgthread.start();
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            }}catch (Exception e){
+            } catch (Exception e) {
                 ciclos.setText("");
             }
         }
@@ -303,8 +319,6 @@ public class MainGUI extends Application implements Runnable {
 
             try {
                 String z = in.readUTF();
-                out.writeUTF("k");
-                out.flush();
                 System.out.println("gui " + z);
                 StringTokenizer s = new StringTokenizer(z, "|");
                 String[] c = new String[8];
@@ -314,6 +328,8 @@ public class MainGUI extends Application implements Runnable {
 
                 switch (c[0]) {
                     case "EN":
+                        out.writeUTF("k");
+                        out.flush();
                         Platform.runLater(() -> sta.getScene().setRoot(root[1]));
                         Platform.runLater(() -> prosout[0].setText("Nuevo cliente agregado"));
                         Platform.runLater(() -> prosout[1].setText("Caja: " + c[1]));
@@ -325,6 +341,8 @@ public class MainGUI extends Application implements Runnable {
                         Platform.runLater(() -> prosout[7].setText("Ciclo: " + c[2]));
                         break;
                     case "N":
+                        out.writeUTF("k");
+                        out.flush();
                         Platform.runLater(() -> prosout[0].setText("Nuevo cliente agregado"));
                         Platform.runLater(() -> prosout[1].setText("Caja: " + c[1]));
                         Platform.runLater(() -> prosout[2].setText(""));
@@ -335,6 +353,8 @@ public class MainGUI extends Application implements Runnable {
                         Platform.runLater(() -> prosout[7].setText("Ciclo: " + c[2]));
                         break;
                     case "C":
+                        out.writeUTF("k");
+                        out.flush();
                         Platform.runLater(() -> prosout[0].setText("Caja: " + c[1]));
                         switch (c[2]) {
                             case "0":
@@ -352,7 +372,7 @@ public class MainGUI extends Application implements Runnable {
                                 break;
                             case "2":
                                 Platform.runLater(() -> prosout[1].setText("Atendiendo cliente en ventanilla"));
-                                Platform.runLater(() -> cajero_img_view.setImage(cajero_img[(Integer.parseInt(c[1])-1)][1]));
+                                Platform.runLater(() -> cajero_img_view.setImage(cajero_img[(Integer.parseInt(c[1]) - 1)][1]));
                                 break;
                         }
                         switch (c[3]) {

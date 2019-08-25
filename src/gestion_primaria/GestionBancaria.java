@@ -53,14 +53,20 @@ public class GestionBancaria implements Runnable {
     }
 
     private void ciclo() {
-        try {
-            String s;
-            s = din.readUTF();
-            System.out.println(s);
-            numero_ciclos = Integer.parseInt(s);
-            comunicacion = "E";
-        } catch (IOException ex) {
+        String s = "";
+        while (true) {
+            try {
+                s = din.readUTF();
+                if (s.equals("x")) {
+                    System.exit(0);
+                } else {
+                    numero_ciclos = Integer.parseInt(s);
+                    comunicacion = "E";
+                }
+                break;
+            } catch (IOException ex) {
 
+            }
         }
         int numero_caja;
         Caja caja_en_gestion;
@@ -74,7 +80,7 @@ public class GestionBancaria implements Runnable {
                 dout.writeUTF(comunicacion);
                 dout.flush();
                 if (din.readUTF().equals("x")) {
-                    Thread.interrupted();
+                    System.exit(0);
                 }
                 Thread.sleep(delay);
             } catch (IOException ex) {
@@ -98,7 +104,7 @@ public class GestionBancaria implements Runnable {
                     System.out.println(comunicacion);
                     comunicacion = "";
                     if (din.readUTF().equals("x")) {
-                        Thread.interrupted();
+                        System.exit(0);
                     }
                     Thread.sleep(delay);
                 } catch (InterruptedException ex) {
