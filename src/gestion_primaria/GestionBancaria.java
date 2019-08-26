@@ -32,10 +32,9 @@ public class GestionBancaria implements Runnable {
     @Override
     public void run() {
         init();
-        while (true) {
-            ciclo();
-            estadisticas();
-        }
+        ciclo();
+        estadisticas();
+
     }
 
     private void init() {

@@ -66,10 +66,13 @@ public class MainGUI extends Application implements Runnable {
     private Scene scene;
     private Scene scene1;
     private Scene scene2;
+    private Scene scene3;
 
     private Stage sta;
     private Stage sta1;
     private Stage sta2;
+    private Stage sta3;
+    private Label[] tran = new Label[2];
 
     private Image x,
             start_background;
@@ -238,6 +241,16 @@ public class MainGUI extends Application implements Runnable {
         root[2].setSpacing(10);
         root[2].setBackground(new Background(new BackgroundFill(Color.rgb(71, 75, 89), CornerRadii.EMPTY, Insets.EMPTY)));
 
+        tran[0] = new Label("");
+        tran[1] = new Label("");
+        tran[0].setTextFill(Color.WHITE);
+        tran[1].setTextFill(Color.WHITE);
+        subroot[1] = new VBox(tran[0], tran[1]);
+        subroot[1].setAlignment(Pos.CENTER);
+        subroot[1].setSpacing(10);
+        subroot[1].setStyle("-fx-background-color: #474b59");
+        subroot[1].setMinSize(620, 300);
+
     }
 
     @Override
@@ -302,6 +315,11 @@ public class MainGUI extends Application implements Runnable {
         sta.initStyle(StageStyle.TRANSPARENT);
         sta.setScene(scene);
         sta.show();
+
+        scene3 = new Scene(subroot[1]);
+        sta3 = new Stage();
+        sta3.setScene(scene3);
+        sta3.initStyle(StageStyle.TRANSPARENT);
     }
 
     private void startSim() {
@@ -349,31 +367,32 @@ public class MainGUI extends Application implements Runnable {
                     case "EN":
                         out.writeUTF("k");
                         out.flush();
+                        Platform.runLater(() -> tran[0].setText("Ciclo " + c[2]));
+                        Platform.runLater(() -> tran[1].setText("Cliente agregado a caja " + c[1]));
+                        Platform.runLater(() -> sta3.show());
+                        Platform.runLater(() -> sta.hide());
                         Platform.runLater(() -> sta.getScene().setRoot(root[1]));
-                        Platform.runLater(() -> prosout[0].setText("Nuevo cliente agregado"));
-                        Platform.runLater(() -> prosout[1].setText("Caja: " + c[1]));
-                        Platform.runLater(() -> prosout[2].setText(""));
-                        Platform.runLater(() -> prosout[3].setText(""));
-                        Platform.runLater(() -> prosout[4].setText(""));
-                        Platform.runLater(() -> prosout[5].setText(""));
-                        Platform.runLater(() -> prosout[6].setText(""));
                         Platform.runLater(() -> prosout[7].setText("Ciclo: " + c[2]));
                         break;
                     case "N":
                         out.writeUTF("k");
                         out.flush();
-                        Platform.runLater(() -> prosout[0].setText("Nuevo cliente agregado"));
-                        Platform.runLater(() -> prosout[1].setText("Caja: " + c[1]));
-                        Platform.runLater(() -> prosout[2].setText(""));
-                        Platform.runLater(() -> prosout[3].setText(""));
-                        Platform.runLater(() -> prosout[4].setText(""));
-                        Platform.runLater(() -> prosout[5].setText(""));
-                        Platform.runLater(() -> prosout[6].setText(""));
+                        Platform.runLater(() -> tran[0].setText("Ciclo " + c[2]));
+                        Platform.runLater(() -> tran[1].setText("Cliente agregado a caja " + c[1]));
+                        Platform.runLater(() -> sta3.show());
+                        Platform.runLater(() -> sta.hide());
                         Platform.runLater(() -> prosout[7].setText("Ciclo: " + c[2]));
                         break;
                     case "C":
                         out.writeUTF("k");
                         out.flush();
+                        Platform.runLater(() -> tran[0].setText("Caja " + c[1]));
+                        Platform.runLater(() -> tran[1].setText(""));
+                        if (!c[1].equals("1")) {
+                            Platform.runLater(() -> sta3.show());
+                        }
+
+                        Platform.runLater(() -> sta.hide());
 
                         control += razons;
                         System.out.println(control);
@@ -446,13 +465,21 @@ public class MainGUI extends Application implements Runnable {
                                 }
                                 break;
                         }
+                        try {
+                            Thread.sleep(1500);
+                            Platform.runLater(() -> sta.show());
+                            Platform.runLater(() -> sta3.hide());
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
                         break;
                     case "R":
                         Platform.runLater(() -> prosout[8].setText("Simulacion Terminada"));
                         Platform.runLater(() -> prosout[8].setAlignment(Pos.CENTER));
                         Platform.runLater(() -> prosout[8].setMinWidth(200));
                         Platform.runLater(() -> prosout[8].setMinHeight(50));
-                        Platform.runLater(() -> btn[3].setText("Ver Estadisticas"));
+                        Platform.runLater(() -> btn[3].setText("Ver resumen"));
                         Platform.runLater(() -> btn[3].setAlignment(Pos.CENTER));
                         Platform.runLater(() -> btn[3].setTextFill(Color.WHITE));
                         Platform.runLater(() -> btn[3].setBackground(new Background(new BackgroundFill(Color.web("#FFFFFF40"), CornerRadii.EMPTY, Insets.EMPTY))));
@@ -487,6 +514,7 @@ public class MainGUI extends Application implements Runnable {
             } catch (IOException ex) {
                 Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
 
     }
